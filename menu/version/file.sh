@@ -16,9 +16,10 @@ mainstart() {
   done
 
   pgnumber=$(cat /var/plexguide/pg.number)
-  latest=$(cat /opt/pgstage/versions.sh | head -n1)
-  dev=$(cat /opt/pgstage/versions.sh | sed -n 2p)
-  release="$(curl -s https://api.github.com/repos/MrDoobPG/PGBlitz.com/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')"
+  # latest=$(cat /opt/pgstage/versions.sh | head -n1)
+  versions=$(cat /opt/pgstage/versions.sh)
+  # dev=$(cat /opt/pgstage/versions.sh | sed -n 2p)
+  release="$(curl -s https://api.github.com/repos/PTS-Team/PTS-Team/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')"
 
   tee <<-EOF
 
@@ -26,9 +27,7 @@ mainstart() {
 📂  Update Interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Stable:   : $latest
-
-Dev       : $dev [ BE CAREFUL ]
+$versions
 
 Installed : $pgnumber
 
