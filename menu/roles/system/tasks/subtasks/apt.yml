@@ -25,31 +25,40 @@
 
 - name: Fix any potential apt issues
   shell: apt-get install --fix-broken --quiet --yes
+  args:
+    warn: false
   environment: "{{ env_vars }}"
   ignore_errors: yes
 
 - name: Install required packages
   apt:
-    state: latest
-    update_cache: yes
-    allow_unauthenticated: yes
-    force_apt_get: yes
-    force: yes
+    state: present
     name:
       - apt-utils
       - byobu
 
 - name: Update APT package cache
-  apt: update_cache=yes cache_valid_time=600
+  apt:
+    update_cache: yes
+  ignore_errors: yes
 
 - name: Upgrade APT to the latest packages
-  apt: upgrade=dist
+  apt:
+    upgrade: dist
+    update_cache: yes
+    dpkg_options: 'force-confold,force-confdef'
   register: apt_result
 
 - name: Autoremove unused packages
-  command: apt-get -y autoremove
-  register: apt_result
+  apt:
+    autoremove: yes
+  ignore_errors: yes
   changed_when: "'packages will be REMOVED' in apt_result.stdout"
+
+- name: Remove useless packages from the cache
+  apt:
+    autoclean: yes
+  ignore_errors: yes
 
 - name: Purge residual kernel packages
   shell: apt-get remove -y --purge $(dpkg -l | grep "^rc\s*linux-image-" | awk '{print $2}' | tr '\n' ' ')
