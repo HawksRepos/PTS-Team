@@ -32,7 +32,7 @@ updateprime() {
   file="${abc}/new.install"
   if [ ! -e "$file" ]; then newinstall; fi
 
-  ospgversion=$(cat /etc/*-release | grep Debian | grep 9)
+  ospgversion=$(cat /etc/*-release | grep Debian | grep -E '9|10')
   if [ "$ospgversion" != "" ]; then
     echo "debian" >${abc}/os.version
   else 
