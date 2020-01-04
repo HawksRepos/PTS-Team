@@ -112,7 +112,66 @@ EOF
   *) badinput ;;
   esac
 }
+selection2() {
+  tee <<-EOF
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Source List URL?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Visit https://github... to look for example lists.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  echo $typed >/var/plexguide/plexlibrary/source.url && question1 ;;
+}
+selection3() {
+  tee <<-EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Plex Source Library?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What library are we taking the films from. (Example 'Movies')
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  echo $typed >/var/plexguide/plexlibrary/plex.library && question1 ;;
+}
+selection4() {
+  tee <<-EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Path to Movies/TV Files?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Example: '/mnt/unionfs/movies'
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  echo $typed >/var/plexguide/plexlibrary/file.path && question1 ;;
+}
+selection5() {
+  tee <<-EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Recipe Name?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What would you like your library to be called (Example: Movies - Trending)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  echo $typed >/var/plexguide/plexlibrary/recipe.name && question1 ;;
+}
 # FIRST QUESTION
 question1() {
 deploycheck
@@ -131,7 +190,7 @@ deploycheck
 [1] Library Type?                         [ $ltype ]
 [2] Source List URL?                      [ $slurl ]
 [3] Plex Source Library?                  [ $plibs ]
-[4] Path to $ltype                        [ $fpath ]
+[4] Path to Movie/TV files                [ $fpath ]
 [5] Recipe Name                           [ $rname ]
 
 [7] Deploy Plex Library                  [ $dstatus ]
@@ -165,15 +224,10 @@ EOF
 }
 
 # FUNCTIONS END ##############################################################
-oldvalue
-section0
-plexcheck
-token
-variable /var/plexguide/plexpatrol/video.transcodes "NON-SET"
-variable /var/plexguide/plexpatrol/video.transcodes4k "NON-SET"
-variable /var/plexguide/plexpatrol/audio.transcodes "NON-SET"
-variable /var/plexguide/plexpatrol/check.interval "NON-SET"
-variable /var/plexguide/plexpatrol/multiple.ips "NON-SET"
-variable /var/plexguide/plexpatrol/kick.minutes "NON-SET"
+variable /var/plexguide/plexlibrary/library.type "NON-SET"
+variable /var/plexguide/plexlibrary/source.url "NON-SET"
+variable /var/plexguide/plexlibrary/plex.library "NON-SET"
+variable /var/plexguide/plexlibrary/file.path "NON-SET"
+variable /var/plexguide/plexlibrary/recipe.name "NON-SET"
 deploycheck
 question1
