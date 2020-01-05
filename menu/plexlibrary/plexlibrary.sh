@@ -10,9 +10,9 @@ source /opt/plexguide/menu/functions/install.sh
 # KEY VARIABLE RECALL & EXECUTION
 fid="/var/plexguide/plexlibrary"
 if [[ ! -d "$fid" ]]; then
-mkdir -p /var/plexguide/plexlibrary
-apt update -yqq
-apt install python-pip -yqq
+mkdir -p "$fid" && apt-get update -yqq
+sleep 0.5
+apt-get install python-pip -yqq
 pip install plexapi requests trakt ruamel.yaml lxml 1>/dev/null 2>&1
 fi
 
@@ -81,7 +81,7 @@ EOF
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 NOTE: The API Client and Secret is set! Ensure to setup your <paths> and
-<profiles> prior to deploying Traktarr.
+<profiles> prior to deploying Plex-Library.
 
 INFO: Messed up? Rerun this API Interface to update the information!
 
@@ -193,8 +193,8 @@ deploycheck
 [4] Path to Movie/TV files                [ $fpath ]
 [5] Recipe Name                           [ $rname ]
 
-[7] Deploy Plex Library                  [ $dstatus ]
-[8] Remove Plex Library
+[A] Deploy Plex Library                  [ $dstatus ]
+[R] Remove Plex Library
 
 [C] Credits
 
@@ -212,9 +212,10 @@ EOF
   3) selection3 && clear && question1 ;;
   4) selection4 && clear && question1 ;;
   5) selection5 && clear && question1 ;;
-  6) selection6 && clear && question1 ;;
-  7) ansible-playbook /opt/plexguide/menu/pg.yml --tags plexlibrary && sleep 5 && clear &&  exit ;;
-  8) selection7 && question1 ;;
+  A) ansible-playbook /opt/plexguide/menu/pg.yml --tags plexlibrary && sleep 5 && clear && exit ;;
+  a) ansible-playbook /opt/plexguide/menu/pg.yml --tags plexlibrary && sleep 5 && clear && exit ;;
+  R) rplexlib && question1 ;;
+  r) rplexlib && question1 ;;
   C) credits && clear && question1 ;;
   c) credits && clear && question1 ;;
   z) exit ;;
