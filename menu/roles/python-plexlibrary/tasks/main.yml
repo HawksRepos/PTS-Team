@@ -161,7 +161,11 @@
     job: "/opt/python-plexlibrary/plexlibrary.sh"
     special_time: daily
     state: present
-    
-- name : Lib typ 
+
+- name : "Trakt Username"
+  shell : cat /var/plexguide/plexlibrary/library.type
+  register : username
+
+- name : "Plex Library type"
   shell : cat /var/plexguide/plexlibrary/library.type
   register : libtype
