@@ -163,9 +163,13 @@
     state: present
 
 - name : "Trakt Username"
-  shell : cat /var/plexguide/plexlibrary/library.type
+  shell : cat /var/plexguide/plexlibrary/---EDIT---
   register : username
 
 - name : "Plex Library type"
   shell : cat /var/plexguide/plexlibrary/library.type
   register : libtype
+  
+- name : "Trakt Client ID"
+  shell : cat /var/plexguide/plexlibrary/---EDIT---
+  register : id
