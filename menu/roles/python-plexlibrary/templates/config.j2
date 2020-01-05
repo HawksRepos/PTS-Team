@@ -9,9 +9,9 @@ plex:
 # Create a Trakt.tv account, then create an API app here:
 # https://trakt.tv/oauth/applications/new
 trakt:
-    username: '{{ username }}'
-    client_id: '{{ id }}'
-    client_secret: '{{ secret }}'
+    username: '{{ username.stdout }}'
+    client_id: '{{ id.stdout }}'
+    client_secret: '{{ secret.stdout }}'
     oauth_token: ''  # Filled in later depending on recipe
 
 # The Movie Database details
