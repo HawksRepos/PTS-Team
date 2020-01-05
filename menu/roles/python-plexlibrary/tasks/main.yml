@@ -1,0 +1,163 @@
+#########################################################################
+# Title:         Cloudbox: Python-PlexLibrary Role                      #
+# Author(s):     desimaniac                                             #
+# URL:           https://github.com/cloudbox/cloudbox                   #
+# --                                                                    #
+#         Part of the Cloudbox project: https://cloudbox.works          #
+#########################################################################
+#                   GNU General Public License v3.0                     #
+#########################################################################
+---
+- name: Create python-plexlibrary directories
+  file: "path={{ item }} state=directory owner={{ user.name }} group={{ user.name }} recurse=yes"
+  with_items:
+    - "/opt/python-plexlibrary"
+
+- name: Server ID
+  shell: 'cat /var/plexguide/pg.serverid'
+  register: serverid
+
+- name: Sonarr API
+  shell: 'cat /var/plexguide/traktarr/pgtrak.sapi'
+  register: sapi
+  ignore_errors: True
+
+- name: Radarr API
+  shell: 'cat /var/plexguide/traktarr/pgtrak.rapi'
+  register: rapi
+  ignore_errors: True
+
+- name: Sonarr Profile
+  shell: 'cat /var/plexguide/traktarr/pgtrak.sprofile'
+  register: sprofile
+  ignore_errors: True
+
+- name: Radarr Profile
+  shell: 'cat /var/plexguide/traktarr/pgtrak.rprofile'
+  register: rprofile
+  ignore_errors: True
+
+- name: Trakt.tv Client
+  shell: 'cat /var/plexguide/traktarr/pgtrak.client'
+  register: client
+  ignore_errors: True
+
+- name: Trakt.tv Secret
+  shell: 'cat /var/plexguide/traktarr/pgtrak.secret'
+  register: secret
+  ignore_errors: True
+
+- name: Radarr Path
+  shell: 'cat /var/plexguide/traktarr/pgtrak.rpath'
+  register: rpath
+  ignore_errors: True
+
+- name: Sonnar Path
+  shell: 'cat /var/plexguide/traktarr/pgtrak.spath'
+  register: spath
+  ignore_errors: True
+
+- name: Max allowed Year | Sonarr
+  shell: 'cat /var/plexguide/traktarr/pgtrakyear.max'
+  register: maxyear
+  ignore_errors: True
+
+- name: Min allowed Year | Sonarr
+  shell: 'cat /var/plexguide/traktarr/pgtrakyear.min'
+  register: minyear
+  ignore_errors: True
+
+- name: Sonar Lang Profile | Sonarr
+  shell: 'cat /var/plexguide/traktarr/pgtrak.lang'
+  register: lang
+  ignore_errors: True
+
+- name: Sonarr minimum availability | Radarr
+  shell: 'cat /var/plexguide/traktarr/pgtrak.minimumavailability'
+  register: minimumavailability
+  ignore_errors: True
+ 
+- name: Clone python-plexlibrary
+  git:
+    repo: "https://github.com/adamgot/python-plexlibrary.git"
+    dest: "/opt/python-plexlibrary"
+    version: master
+    force: yes
+  become: yes
+  become_user: '1000'
+
+- name: Install pip requirements
+  pip:
+    requirements: "/opt/python-plexlibrary/requirements.txt"
+    executable: pip
+
+- name: Check config exists
+  stat:
+    path: "/opt/python-plexlibrary/config.yml"
+  register: python_plexlibrary_config
+
+- name: Create config from template
+  copy:
+    src: config.j2
+    dest: "/opt/python-plexlibrary/config.yml"
+    owner: '1000'
+    group: '1000'
+    mode: 0775
+    force: no
+  when: not python_plexlibrary_config.stat.exists
+
+- name: Add plex url to config file
+  shell: |
+    yyq w -i /opt/python-plexlibrary/config.yml plex.baseurl 'https://plex.{{ user.domain }}:443'
+  become: yes
+  become_user: '1000'
+
+- name: "Copy example recipes to '/opt/python-plexlibrary' folder"
+  copy:
+    src: "{{ item }}"
+    dest: "/opt/python-plexlibrary/recipes/examples/cloudbox/"
+    owner: '1000'
+    group: '1000'
+    mode: 0664
+    force: yes
+  with_fileglob:
+    - "recipes/*.yml"
+
+- name: "Copy 'plexlibrary.sh' to '/opt/python-plexlibrary' folder"
+  copy:
+    src: "plexlibrary.sh"
+    dest: "/opt/python-plexlibrary/plexlibrary.sh"
+    owner: '1000'
+    group: '1000'
+    mode: 0775
+    force: yes
+
+- name: Set 'plexlibrary.sh' as executable
+  file:
+    path: "/opt/python-plexlibrary/plexlibrary.sh"
+    mode: a+x
+
+- name: "Create '/usr/local/bin' symlink"
+  file:
+    src: "/opt/python-plexlibrary/plexlibrary.sh"
+    dest: "/usr/local/bin/plexlibrary"
+    state: link
+
+- name: "Add items to '.gitignore'"
+  lineinfile:
+    path: "/opt/python-plexlibrary/.gitignore"
+    state: present
+    insertafter: EOF
+    line: '{{ item }}'
+  with_items:
+    - "recipes/examples/cloudbox/*.yml"
+    - "plexlibrary.sh"
+    - "*.log"
+
+- name: "Schedule cron task for daily update."
+  cron:
+    name: "Python-PlexLibrary"
+    user: '1000'
+    job: "/opt/python-plexlibrary/plexlibrary.sh"
+    special_time: daily
+    state: present
