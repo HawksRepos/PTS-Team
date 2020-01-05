@@ -48,7 +48,7 @@ EOF
     echo ""
     read -p '🌍 Process Complete | Press [ENTER] ' typed </dev/tty
 	question1 ;;
-  z)  exit ;;
+  z) exit ;;
   Z) exit ;;
   *) question1 ;;
   esac

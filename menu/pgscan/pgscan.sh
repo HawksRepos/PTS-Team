@@ -1,31 +1,32 @@
 # KEY VARIABLE RECALL & EXECUTION
+source /opt/plexguide/menu/pgscan/scripts/endbanner.sh
 mkdir -p /var/plexguide/pgscan
 touch /var/plexguide/pgscan/plex.token
-touch /var/plexguide/pgscan/plex.pw
-touch /var/plexguide/pgscan/plex.user
+
 # FUNCTIONS START ##############################################################
 # FIRST FUNCTION
 variable() {
   file="$1"
-  if [ ! -e "$file" ]; then echo "$2" >$1; fi
+  if [[ ! -e "$file" ]]; then echo "$2" >$1; fi
+}
+
+passtartfirst() {
+file="/opt/plex_autoscan/config/config.json"
+  if [[ ! -f $file ]]; then
+	pasundeployed 
+  else plexcheck; fi
 }
 
 deploycheck() {
   dcheck=$(systemctl is-active plex_autoscan.service)
-  if [ "$dcheck" == "active" ]; then
+  if [[ "$dcheck" == "active" ]]; then
     dstatus="✅ DEPLOYED"
   else dstatus="⚠️ NOT DEPLOYED"; fi
-}
-userstatus() {
-  userdep=$(cat /var/plexguide/pgscan/plex.pw)
-  if [ "$userdep" != "" ]; then
-    ustatus="✅ DEPLOYED"
-  else ustatus="⚠️ NOT DEPLOYED"; fi
 }
 
 tokenstatus() {
   ptokendep=$(cat /var/plexguide/pgscan/plex.token)
-  if [ "$ptokendep" != "" ]; then
+  if [[ "$ptokendep" != "" ]]; then
         if [[ ! -f "/opt/plex_autoscan/config/config.json" ]]; then
                 pstatus="❌ DEPLOYED BUT PAS CONFIG MISSING";
         else
@@ -38,57 +39,71 @@ tokenstatus() {
 
 plexcheck() {
   pcheck=$(docker ps --format {{.Names}} | grep "plex")
-  if [ "$pcheck" == "" ]; then
-
-    tee <<-EOF
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⛔️  WARNING! - Plex is Not Installed or Running! Exiting!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
-    read -p 'Confirm Info | PRESS [ENTER] ' typed </dev/tty
-    exit
+  if [[ "$pcheck" == "" ]]; then
+	printf '
+	━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+	⛔️  WARNING! - Plex is Not Installed or Running! Exiting!
+	━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+	'
+    dontwork
   fi
 }
 
-user() {
-  touch /var/plexguide/pgscan/plex.pw
-  user=$(cat /var/plexguide/pgscan/plex.pw)
-  if [ "$user" == "" ]; then
-    bash /opt/plexguide/menu/pgscan/scripts/plex_pw.sh
-  fi
-}
 token() {
   touch /var/plexguide/pgscan/plex.token
   ptoken=$(cat /var/plexguide/pgscan/plex.token)
-  if [ "$ptoken" == "" ]; then
-    bash /opt/plexguide/menu/pgscan/scripts/plex_token.sh 1>/dev/null 2>&1
+  if [[ "$ptoken" == "" ]]; then
+    tokencreate
 	sleep 2
+	X_PLEX_TOKEN=$(sudo cat "/opt/appdata/plex/database/Library/Application Support/Plex Media Server/Preferences.xml" | sed -e 's;^.* PlexOnlineToken=";;' | sed -e 's;".*$;;' | tail -1)
     ptoken=$(cat /var/plexguide/pgscan/plex.token)
-    if [ "$ptoken" == "" ]; then
-      tee <<-EOF
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⛔️  WARNING! - Failed to Generate a Valid Plex Token! Exiting Deployment!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
-      read -p 'Confirm Info | PRESS [ENTER] ' typed </dev/tty
-      exit
+    if [[ "$ptoken" != "$X_PLEX_TOKEN" ]]; then
+	printf '
+	━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+	⛔️  WARNING!  Failed to Generate a Valid Plex Token! 
+	⛔️  WARNING!  Exiting Deployment!
+	━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+	'
+	dontwork
     fi
   fi
 }
+
+tokencreate() {
+templatebackup=/opt/plexguide/menu/roles/plex_autoscan/templates/config.backup
+template=/opt/plexguide/menu/roles/plex_autoscan/templates/config.json.j2
+X_PLEX_TOKEN=$(sudo cat "/opt/appdata/plex/database/Library/Application Support/Plex Media Server/Preferences.xml" | sed -e 's;^.* PlexOnlineToken=";;' | sed -e 's;".*$;;' | tail -1)
+
+cp -r $template $templatebackup
+echo $X_PLEX_TOKEN >/var/plexguide/pgscan/plex.token
+
+RAN=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+echo $RAN >/var/plexguide/pgscan/pgscan.serverpass
+}
+ippart() {
+vs=$(cat /var/plexguide/pg.transport)
+if [[ "$vs" != "local" ]]; then
+wget -qO- http://ipecho.net/plain | xargs echo >/var/plexguide/pgscan/pgscan.ip
+else cp -r /var/plexguide/server.ip /var/plexguide/pgscan/pgscan.ip; fi
+}
+
 # BAD INPUT
 badinput() {
   echo
   read -p '⛔️ ERROR - BAD INPUT! | PRESS [ENTER] ' typed </dev/tty
-  question1
+  clear && question1
+}
+
+dontwork() {
+ echo
+  read -p 'Confirm Info | PRESS [ENTER] ' typed </dev/tty
+  clear &&  exit 0
 }
 
 works(){
  echo
   read -p 'Confirm Info | PRESS [ENTER] ' typed </dev/tty
-  question1
+  clear && question1
 }
 credits(){
 clear
@@ -118,20 +133,19 @@ EOF
 
  echo
   read -p 'Confirm Info | PRESS [ENTER] ' typed </dev/tty
-  question1
+  clear && question1
 }
 
 doneenter(){
  echo
   read -p 'All done | PRESS [ENTER] ' typed </dev/tty
-  question1
+  clear && question1
 }
 
 showupdomain() {
 clear
 PAS_CONFIG="/opt/plex_autoscan/config/config.json"
-
-SERVER_IP=$(ip a | grep glo | awk '{print $2}' | head -1 | cut -f1 -d/)
+SERVER_IP=$(cat ${PAS_CONFIG} | jq -r .SERVER_IP)
 SERVER_PORT=$(cat ${PAS_CONFIG} | jq -r .SERVER_PORT)
 SERVER_PASS=$(cat ${PAS_CONFIG} | jq -r .SERVER_PASS)
 
@@ -149,29 +163,128 @@ Press Enter to Exit
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-
- if [ "$typed" == "" ]; then
-    question1
-  elif [[ "$typed" == "Z" || "$typed" == "z" ]]; then
-    exit
-  else works; fi
+ works
 }
 remove(){
 ansible-playbook /opt/plexguide/menu/pgscan/remove-pgscan.yml 
-  tee <<-EOF
-
+  printf '
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 Plex_AutoScan is full removed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
+'
  echo 
   read -p 'All done | PRESS [ENTER] ' typed </dev/tty
 }
+fxmatch() {
+  tee <<-EOF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Plex_AutoScan FixMatching 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTE : 
+Plex Autoscan will compare the TVDBID/TMDBID/IMDBID sent 
+by Sonarr/Radarr with what Plex has matched with, and if 
+this match is incorrect, it will autocorrect the match on the 
+item (movie file or TV episode). If the incorrect match is 
+a duplicate entry in Plex, it will auto split the original 
+entry before correcting the match on the new item.
 
-# FIRST QUESTION
+
+[1] Fixmatch Lang                     [ $(cat /var/plexguide/pgscan/fixmatch.lang) ]
+[2] Fixmatch on / off                 [ $(cat /var/plexguide/pgscan/fixmatch.status) ]
+
+[Z] - Exit
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  case $typed in
+  1) lang && clear && fxmatch ;;
+  2) runs && clear && fxmatch ;;
+  z) question1 ;;
+  Z) question1 ;;
+  *) fxmatch ;;
+  esac
+}
+lang() {
+  tee <<-EOF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Plex_AutoScan FixMatching  Lang
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTE : Sample :
+
+this will work : 
+en
+de 
+jp
+ch
+
+Default is "en"
+
+[Z] - Exit
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+
+  read -p '↘️  Type Lang | Press [ENTER]: ' typed </dev/tty
+
+  if [[ "$typed" == "exit" || "$typed" == "Exit" || "$typed" == "EXIT" || "$typed" == "z" || "$typed" == "Z" ]]; then
+  fxmatch 
+  else
+    tee <<-EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SYSTEM MESSAGE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Language Set Is: $typed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+
+  echo $typed >/var/plexguide/pgscan/fixmatch.lang
+    read -p '🌎 Acknowledge Info | Press [ENTER] ' typed </dev/tty
+  fxmatch
+  fi
+}
+runs() {
+  tee <<-EOF
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Plex_AutoScan Fixmissmatch
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[1] True 
+[2] False
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Z] - Exit
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  case $typed in
+  1) echo "true" >/var/plexguide/pgscan/fixmatch.status && fxmatch ;;
+  2) echo "false" >/var/plexguide/pgscan/fixmatch.status && fxmatch ;;
+  z) fxmatch ;;
+  Z) fxmatch ;;
+  *) fxmatch ;;
+  esac
+}
+pasuideploy() {
+ui="/opt/appdata/pgui"
+if [[ -d "$ui" ]]; then cp -rv /opt/plexguide/menu/pgui/templates/autoscan-index.php /opt/appdata/pgui/index.php; fi
+}
+pasuiremove() {
+ui="/opt/appdata/pgui"
+if [[ -d "$ui" ]]; then cp -rv /opt/plexguide/menu/pgui/templates/index.php /opt/appdata/pgui/index.php; fi
+}
+#######################################################################################
 question1() {
-userstatus
+langfa=$(cat /var/plexguide/pgscan/fixmatch.status)
+lang=$(cat /var/plexguide/pgscan/fixmatch.lang)
 tokenstatus
 deploycheck
   tee <<-EOF
@@ -180,16 +293,16 @@ deploycheck
 🚀 Plex_AutoScan Interface  || l3uddz/plex_autoscan
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-NOTE : Plex_AutoScan are located  in /opt/plex_autoscan
+NOTE : Plex_AutoScan are located in /opt/plex_autoscan
 
-[1] Deploy Plex Username & Plex Password  [ $ustatus ]
-[2] Deploy Plex Token                     [ $pstatus ]
+[1] Deploy Plex Token                     [ $pstatus ]
+[2] Fixmatch Lang                         [ $lang | $langfa ]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [A] Deploy Plex-Auto-Scan                 [ $dstatus ]
 
 [D] PlexAutoScan Domain
-[S] Show last 50 lines of log
+[S] Show last 50 lines of Plex_AutoScan log
 [R] Remove Plex_AutoScan
 [C] Credits
 
@@ -203,26 +316,28 @@ EOF
   read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
 
   case $typed in
-  1) bash /opt/plexguide/menu/pgscan/scripts/plex_pw.sh && clear && question1 ;;
-  2) bash /opt/plexguide/menu/pgscan/scripts/plex_token.sh && clear && question1 ;;
-  A) ansible-playbook /opt/plexguide/menu/pg.yml --tags plex_autoscan && clear && question1 ;;
-  a) ansible-playbook /opt/plexguide/menu/pg.yml --tags plex_autoscan&& clear && question1 ;;
+  1) tokencreate && clear && question1 ;;
+  2) fxmatch && clear && question1 ;;
+  A) ansible-playbook /opt/plexguide/menu/pg.yml --tags plex_autoscan && pasuideploy && clear && pasdeployed && question1 ;;
+  a) ansible-playbook /opt/plexguide/menu/pg.yml --tags plex_autoscan && pasuideploy && clear && pasdeployed && question1 ;;
   D) showupdomain && clear && question1 ;;
   d) showupdomain && clear && question1 ;;
   S) tail -n 50 /opt/plex_autoscan/plex_autoscan.log && doneenter ;;
   s) tail -n 50 /opt/plex_autoscan/plex_autoscan.log && doneenter;;
-  r) remove && doneenter  && sleep 5 && clear &&  exit ;;
-  R) remove && doneenter && sleep 5 && clear &&  exit ;;
+  r) remove && pasuiremove && doneenter  && sleep 5 && clear && exit 0 ;;
+  R) remove && pasuiremove && doneenter && sleep 5 && clear && exit 0 ;;
   C) credits && clear && question1 ;;
   c) credits && clear && question1 ;;
-  z) exit ;;
-  Z) exit ;;
+  z) exit 0 ;;
+  Z) exit 0 ;;
   *) question1 ;;
   esac
 }
 # FUNCTIONS END ##############################################################
-plexcheck
-userstatus
+passtartfirst
 tokenstatus
+ippart
+variable /var/plexguide/pgscan/fixmatch.lang "en"
+variable /var/plexguide/pgscan/fixmatch.status "false"
 deploycheck
 question1

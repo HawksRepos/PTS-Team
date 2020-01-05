@@ -8,12 +8,15 @@
 
 # FUNCTIONS START ##############################################################
 source /opt/plexguide/menu/functions/functions.sh
-source /opt/plexguide/menu/functions/install.sh
 
 queued() {
   echo
   read -p "⛔️ ERROR - $typed already queued! | Press [ENTER] " typed </dev/tty
   question1
+}
+
+value() {
+bash /opt/plexguide/menu/pgbox/value.sh
 }
 
 exists() {
@@ -26,6 +29,13 @@ exists() {
   elif [[ "$foo" == "n" || "$foo" == "N" ]]; then
     question1
   else exists; fi
+}
+
+badinputcom() {
+  echo ""
+  echo "⛔️ ERROR - Bad Input! $typed not exist"
+  echo ""
+  read -p 'PRESS [ENTER] ' typed </dev/tty
 }
 
 cronexe() {
@@ -48,19 +58,18 @@ initial() {
   touch /var/plexguide/app.list
   touch /var/plexguide/pgbox.buildup
 
-  mkdir -p /opt/communityapps
-  ansible-playbook /opt/plexguide/menu/pgbox/community/community.yml >/dev/null 2>&1
+  folder && ansible-playbook /opt/plexguide/menu/pgbox/community/community.yml >/dev/null 2>&1
 
-  echo ""
-  echo "💬  Pulling Update Files - Please Wait"
   file="/opt/communityapps/place.holder"
   waitvar=0
   while [ "$waitvar" == "0" ]; do
     sleep .5
     if [ -e "$file" ]; then waitvar=1; fi
   done
-  customcontainers
-  apt-get install dos2unix -yqq && dos2unix /opt/communityapps/apps/image/_image.sh >/dev/null 2>&1
+  apt-get install dos2unix -yqq
+  dos2unix /opt/communityapps/apps/image/_image.sh >/dev/null 2>&1
+  dos2unix /opt/communityapps/apps/_appsgen.sh >/dev/null 2>&1
+
 }
 
 question1() {
@@ -121,7 +130,7 @@ question1() {
   tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Multi-App Installer  || Community APPS
+🚀 Multi-App Installer | Community APPS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📂 Potential Apps to Install
@@ -146,13 +155,13 @@ EOF
   if [[ "$typed" == "exit" || "$typed" == "Exit" || "$typed" == "EXIT" || "$typed" == "z" || "$typed" == "Z" ]]; then exit; fi
 
   current=$(cat /var/plexguide/pgbox.buildup | grep "\<$typed\>")
-  if [ "$current" != "" ]; then queued && question1; fi
+  if [ "$current" != "" ]; then queued && question1 ; fi
 
   current=$(cat /var/plexguide/pgbox.running | grep "\<$typed\>")
-  if [ "$current" != "" ]; then exists && question1; fi
+  if [ "$current" != "" ]; then exists && question1 ; fi
 
   current=$(cat /var/plexguide/program.temp | grep "\<$typed\>")
-  if [ "$current" == "" ]; then badinput1 && question1; fi
+  if [ "$current" == "" ]; then badinputcom && question1 ; fi
 
   part1
 }
@@ -216,15 +225,12 @@ $p - Now Installing!
 
 EOF
 
-    sleep 1
-
-    if [ "$p" == "plex" ]; then
-      bash /opt/plexguide/menu/plex/plex.sh
-    elif [ "$p" == "nzbthrottle" ]; then nzbt; fi
+    ##### CHECK START #####
+    value
+    ##### CHECK EXIT #####
 
     # Store Used Program
     echo "$p" >/tmp/program_var
-
     # Execute Main Program
     ansible-playbook /opt/communityapps/apps/$p.yml
 
@@ -245,6 +251,10 @@ EOF
 start() {
 initial
 question1
+}
+
+folder() {
+mkdir -p /opt/communityapps
 }
 
 # FUNCTIONS END ##############################################################

@@ -27,6 +27,13 @@ exists() {
   else exists; fi
 }
 
+badinputgce() {
+  echo ""
+  echo "⛔️ ERROR - Bad Input! $typed not exist"
+  echo ""
+  read -p 'PRESS [ENTER] ' typed </dev/tty
+}
+
 cronexe() {
   croncheck=$(cat /opt/coreapps/apps/_cron.list | grep -c "\<$p\>")
   if [ "$croncheck" == "0" ]; then bash /opt/plexguide/menu/cron/cron.sh; fi
@@ -55,7 +62,10 @@ initial() {
     sleep .5
     if [ -e "$file" ]; then waitvar=1; fi
   done
-  apt-get install dos2unix -yqq && dos2unix /opt/coreapps/apps/image/_image.sh >/dev/null 2>&1
+  apt-get install dos2unix -yqq
+  dos2unix /opt/coreapps/apps/image/_image.sh >/dev/null 2>&1
+  dos2unix /opt/coreapps/apps/_appsgen.sh >/dev/null 2>&1
+
 }
 
 question1() {
@@ -99,6 +109,8 @@ question1() {
   sed -i -e "/image/d" /var/plexguide/app.list
   sed -i -e "/watchtower/d" /var/plexguide/app.list
   sed -i -e "/_/d" /var/plexguide/app.list
+  sed -i -e "/plex/d" /var/plexguide/app.list
+
   while read p; do
     echo -n $p >>/var/plexguide/program.temp
     echo -n " " >>/var/plexguide/program.temp
@@ -147,7 +159,7 @@ EOF
   if [ "$current" != "" ]; then exists && question1; fi
 
   current=$(cat /var/plexguide/program.temp | grep "\<$typed\>")
-  if [ "$current" == "" ]; then badinput1 && question1; fi
+  if [ "$current" == "" ]; then badinputgce && question1; fi
 
   part1
 }
@@ -212,10 +224,6 @@ $p - Now Installing!
 EOF
 
     sleep 1
-
-    if [ "$p" == "plex" ]; then
-      bash /opt/plexguide/menu/plex/plex.sh
-    elif [ "$p" == "nzbthrottle" ]; then nzbt; fi
 
     # Store Used Program
     echo "$p" >/tmp/program_var

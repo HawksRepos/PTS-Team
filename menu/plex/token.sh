@@ -24,7 +24,7 @@ badinput2() {
 tokenstatus() {
   ptokendep=$(cat /var/plexguide/plex.token)
   if [ "$ptokendep" != "" ]; then
-  PGSELFTEST=$(curl -LI "http://localhost:32400/system?X-Plex-Token=$(cat /var/plexguide/plex.token)"  -o /dev/null -w '%{http_code}\n' -s)
+  PGSELFTEST=$(curl -LI "http://$(hostname -I | awk '{print $1}'):32400/system?X-Plex-Token=$(cat /var/plexguide/plex.token)"  -o /dev/null -w '%{http_code}\n' -s)
   	if [[ $PGSELFTEST -ge 200 && $PGSELFTEST -le 299 ]]; then
   	  pstatus="✅ DEPLOYED"
 	  else
@@ -57,7 +57,7 @@ EOF
 
   if [ "$typed" == "1" ]; then
     read -p 'Enter the PLEX User Name      | Press [ENTER]: ' user </dev/tty
-    read -p 'Enter the PLEX User Passwort  | Press [ENTER]: ' pw </dev/tty
+    read -p 'Enter the PLEX User Password  | Press [ENTER]: ' pw </dev/tty
 
     tee <<-EOF
 

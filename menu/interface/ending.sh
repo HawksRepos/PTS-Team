@@ -9,12 +9,10 @@ source /opt/plexguide/menu/functions/install.sh
 emergency
 file="/bin/pts"
 if [[ ! -f "/bin/pts" ]]; then
-  cp /opt/plexguide/menu/alias/templates/pts /bin &&  chown 1000:1000 /bin/pts && chmod 0755 /bin/pts; fi
+  cp /opt/plexguide/menu/alias/templates/pts /bin && chown 1000:1000 /bin/pts && chmod 0755 /bin/pts; fi
 #
 clear 
-echo ""
-
-cat <<"EOF"
+ printf '
 ┌─────────────────────────────────────┐
 │         -==   Team PTS  ==-         │
 │ ————————————————————————————————————│
@@ -31,9 +29,13 @@ cat <<"EOF"
 │ Davaz, Deiteq, FlickerRate,         │
 │ ClownFused, MrDoob, Sub7Seven,      │
 │ TimeKills, The_Creator, Desimaniac, │
-│ l3uddz, RXWatcher,Calmcacil, Porkie │
+│ l3uddz, RXWatcher, Calmcacil,       │
+│ ΔLPHΔ , Maikash , Porkie            │
+│ CDN_RAGE , hawkinzzz , The_DeadPool │
+│ BugHunter : Krallenkiller           │
+│                                     │
 └─────────────────────────────────────┘
+'
 
-EOF
 
 

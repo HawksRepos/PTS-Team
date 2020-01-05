@@ -19,6 +19,10 @@ queued() {
   question1
 }
 
+value() {
+bash /opt/plexguide/menu/pgbox/value.sh
+}
+
 exists() {
   echo ""
   echo "⛔️ ERROR - $typed Already Installed!"
@@ -53,9 +57,7 @@ initial() {
 
   mkdir -p /opt/mycontainers
 
-  ansible-playbook /opt/plexguide/menu/pgbox/personal.yml >/dev/null 2>&1
-  apt-get install dos2unix -yqq && dos2unix /opt/mycontainers/apps/image/_image.sh >/dev/null 2>&1
-
+  ansible-playbook /opt/plexguide/menu/pgbox/personal/personal.yml
   file="/opt/mycontainers/place.holder"
   waitvar=0
   while [ "$waitvar" == "0" ]; do
@@ -193,8 +195,8 @@ question2() {
   while read p; do
 
     echo "$p" >/tmp/program_var
-
-    bash /opt/mycontainers/apps/image/_image.sh
+	if [[ -d "/opt/mycontainers/apps/image/" ]]; then
+    bash /opt/mycontainers/apps/image/_image.sh ; fi
 
     # CName & Port Execution
     bash /opt/plexguide/menu/pgbox/cname.sh
@@ -220,10 +222,9 @@ $p - Now Installing!
 EOF
 
     sleep 1
-
-    if [ "$p" == "plex" ]; then
-      bash /opt/plexguide/menu/plex/plex.sh
-    elif [ "$p" == "nzbthrottle" ]; then nzbt; fi
+    ##### CHECK START #####
+    value
+    ##### CHECK EXIT #####
 
     # Store Used Program
     echo "$p" >/tmp/program_var
@@ -247,7 +248,7 @@ EOF
 mainbanner() {
 
   boxuser=$(cat /var/plexguide/boxpersonal.user)
-  boxrepo=$(cat /var/plexguide/boxrepo.repo)
+  boxrepo=$(cat /var/plexguide/boxpersonal.repo)
   boxbranch=$(cat /var/plexguide/boxpersonal.branch)
  
 
@@ -287,15 +288,15 @@ Username / Branch & Repo are both case sensitive!
 
 EOF
     read -p 'Username | Press [ENTER]: ' boxuser </dev/tty
-	read -p 'REPO     | Press [ENTER]: ' boxrepo </dev/tty
+    read -p 'REPO     | Press [ENTER]: ' boxrepo </dev/tty
     read -p 'Branch   | Press [ENTER]: ' boxbranch </dev/tty
     echo "$boxuser" >/var/plexguide/boxpersonal.user
     echo "$boxrepo" >/var/plexguide/boxpersonal.repo
     echo "$boxbranch" >/var/plexguide/boxpersonal.branch
-    pinterface
+    mainbanner
     ;;
   2)
-    existcheck=$(git ls-remote --exit-code -h "https://github.com/$boxuser/$boxrepo" | grep "$boxbranch")
+    existcheck=$(git ls-remote --exit-code -h "https://github.com/$(cat /var/plexguide/boxpersonal.user)/$(cat /var/plexguide/boxpersonal.repo)" | grep "$(cat /var/plexguide/boxpersonal.branch)")
     if [ "$existcheck" == "" ]; then
       echo
       read -p '💬 Exiting! Forked Version Does Not Exist! | Press [ENTER]: ' typed </dev/tty

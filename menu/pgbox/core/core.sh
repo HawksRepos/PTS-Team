@@ -15,6 +15,10 @@ queued() {
   question1
 }
 
+value() {
+bash /opt/plexguide/menu/pgbox/value.sh
+}
+
 exists() {
   echo ""
   echo "⛔️ ERROR - $typed Already Installed!"
@@ -25,6 +29,13 @@ exists() {
   elif [[ "$foo" == "n" || "$foo" == "N" ]]; then
     question1
   else exists; fi
+}
+
+badinputcore() {
+  echo ""
+  echo "⛔️ ERROR - Bad Input! $typed not exist"
+  echo ""
+  read -p 'PRESS [ENTER] ' typed </dev/tty
 }
 
 cronexe() {
@@ -47,20 +58,17 @@ initial() {
   touch /var/plexguide/app.list
   touch /var/plexguide/pgbox.buildup
 
-  folder
+  folder && ansible-playbook /opt/plexguide/menu/pgbox/core/core.yml >/dev/null 2>&1
 
-  ansible-playbook /opt/plexguide/menu/pgbox/core/core.yml >/dev/null 2>&1
-
-  echo ""
-  echo "💬  Pulling Update Files - Please Wait"
   file="/opt/coreapps/place.holder"
   waitvar=0
   while [ "$waitvar" == "0" ]; do
     sleep .5
     if [ -e "$file" ]; then waitvar=1; fi
   done
-  apt-get install dos2unix -yqq && dos2unix /opt/coreapps/apps/image/_image.sh >/dev/null 2>&1
-
+  apt-get install dos2unix -yqq
+  dos2unix /opt/coreapps/apps/image/_image.sh >/dev/null 2>&1
+  dos2unix /opt/coreapps/apps/_appsgen.sh >/dev/null 2>&1
 }
 
 question1() {
@@ -153,7 +161,7 @@ EOF
   if [ "$current" != "" ]; then exists && question1; fi
 
   current=$(cat /var/plexguide/program.temp | grep "\<$typed\>")
-  if [ "$current" == "" ]; then badinput1 && question1; fi
+  if [ "$current" == "" ]; then badinputcore && question1; fi
 
   part1
 }
@@ -218,11 +226,7 @@ $p - Now Installing!
 EOF
 
     sleep 1
-
-    if [ "$p" == "plex" ]; then
-      bash /opt/plexguide/menu/plex/plex.sh
-    elif [ "$p" == "nzbthrottle" ]; then nzbt; fi
-
+	value
     # Store Used Program
     echo "$p" >/tmp/program_var
     # Execute Main Program

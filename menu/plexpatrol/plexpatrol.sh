@@ -7,23 +7,19 @@
 ################################################################################
 source /opt/plexguide/menu/functions/functions.sh
 source /opt/plexguide/menu/functions/install.sh
+
 # KEY VARIABLE RECALL & EXECUTION
 mkdir -p /var/plexguide/plexpatrol
+rm -rf /var/plexguide/pgpatrol
 
 # FUNCTIONS START ##############################################################
-oldvalue(){
-value="/var/plexguide/pgpatrol"
-if [[ ! -f $value ]]; then
-rm -rf /var/plexguide/pgpatrol; fi
-}
-
 # FIRST FUNCTION
 variable() {
   file="$1"
   if [ ! -e "$file" ]; then echo "$2" >$1; fi
 }
 
-doneenter(){
+doneenter() {
  echo
   read -p 'All done | PRESS [ENTER] ' typed </dev/tty
   question1
@@ -39,16 +35,13 @@ deploycheck() {
 plexcheck() {
   pcheck=$(docker ps --format {{.Names}} | grep "plex")
   if [ "$pcheck" == "" ]; then
-
-    tee <<-EOF
-
+printf'
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⛔️  WARNING! - Plex is Not Installed or Running! Exiting!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-EOF
+'
     read -p 'Confirm Info | PRESS [ENTER] ' typed </dev/tty
-    exit
+    exit 0
   fi
 }
 
@@ -58,11 +51,15 @@ token() {
         if [[ ! -f "/opt/appdata/plexpatrol/settings.ini" ]]; then
                 pstatus="❌ DEPLOYED BUT PAPTROL CONFIG MISSING";
         else
-                PGSELFTEST=$(curl -LI "http://localhost:32400/system?X-Plex-Token=$(cat /opt/appdata/plexpatrol/settings.ini | grep "SERVER_TOKEN" | awk '{print $3}')" -o /dev/null -w '%{http_code}\n' -s)
+                PGSELFTEST=$(curl -LI "http://$(hostname -I | awk '{print $1}'):32400/system?X-Plex-Token=$(cat /opt/appdata/plexpatrol/settings.ini | grep "SERVER_TOKEN" | awk '{print $3}')" -o /dev/null -w '%{http_code}\n' -s)
                 if [[ $PGSELFTEST -ge 200 && $PGSELFTEST -le 299 ]]; then  pstatus="✅ DEPLOYED"
                 else pstatus="❌ DEPLOYED BUT PATROL TOKEN FAILED"; fi
         fi
-  else pstatus="⚠️ NOT DEPLOYED"; fi
+  else ctoken; fi
+  #else pstatus="⚠️ NOT DEPLOYED"; fi
+}
+ctoken() {
+bash /opt/plexguide/menu/plexpatrol/token.sh && clear
 }
 
 # BAD INPUT
@@ -71,15 +68,6 @@ badinput() {
   read -p '⛔️ ERROR - BAD INPUT! | PRESS [ENTER] ' typed </dev/tty
   question1
 }
-
-#######################################################################################
-### Remove old folder and create first layout for token
-section0(){
-sect0="/var/plexguide/plexpatrol/plex.token"
-  if [[ ! -f $sect0 ]]; then
-  bash /opt/plexguide/menu/plexpatrol/token.sh  && oldvalue ; fi
-}
-#########################################################################################
 
 selection1() {
   tee <<-EOF
@@ -164,12 +152,12 @@ selection5() {
 🚀 Limit How Long a User Can Pause For!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Set a Number from [ 5 ] - [ 250 ] Mintues
+Set a Number from [ 5 ] - [ 120 ] Mintues
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
   read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
-  if [[ "$typed" -ge "1" && "$typed" -le "250" ]]; then
+  if [[ "$typed" -ge "5" && "$typed" -le "120" ]]; then
     echo -e "$typed" >/var/plexguide/plexpatrol/kick.minutes && question1
   else badinput; fi
 }
@@ -298,8 +286,6 @@ EOF
 }
 
 # FUNCTIONS END ##############################################################
-oldvalue
-section0
 plexcheck
 token
 variable /var/plexguide/plexpatrol/video.transcodes "NON-SET"

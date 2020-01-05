@@ -37,27 +37,22 @@
     register: plex_auth_token
 
   - name: Register IP
-    shell: 'cat /var/plexguide/server.ip'
+    shell: 'cat /var/plexguide/pgscan/pgscan.ip'
     register: ipaddress
 
-  - name: plex_auto_scan server pass 
+  - name: Register ServerPass
     shell: 'cat /var/plexguide/pgscan/pgscan.serverpass'
     register: plex_autoscan_server_pass
 
+  - name: Register Fixmatch Lang
+    shell: 'cat /var/plexguide/pgscan/fixmatch.lang'
+    register: fixmatchlang
+  
+  - name: Register Fixmatch status
+    shell: 'cat /var/plexguide/pgscan/fixmatch.status'
+    register: fixmatchstatus
+
   when: not plex_autoscan_config.stat.exists
-
-- name: Settings | Existing 'config.json' tasks
-  block:
-
-  - name: Settings | Update 'PLEX_LD_LIBRARY_PATH' in 'config.json'
-    shell: |
-      CONFIG_PATH="/opt/plex_autoscan/config/config.json"
-      jq '.PLEX_LD_LIBRARY_PATH = "/usr/lib/plexmediaserver/lib"' ${CONFIG_PATH} | sponge ${CONFIG_PATH}
-    become: yes
-
-  when: plex_autoscan_config.stat.exists
-
-# Update 'config.json' for new and existing setups
 
 - name: Settings | Upgrade 'config.json'
   shell: "/opt/plex_autoscan/scan.py update_config"
