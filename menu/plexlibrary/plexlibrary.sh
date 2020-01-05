@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Title:      Plex Library
-# org.Author(s):
+# org.Author(s): MrDoob, Hawkinzzz, adamgot
 #
 # GNU:        General Public License v3.0
 ################################################################################
