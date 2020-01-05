@@ -161,3 +161,7 @@
     job: "/opt/python-plexlibrary/plexlibrary.sh"
     special_time: daily
     state: present
+    
+- name : Lib typ 
+  shell : cat /var/plexguide/plexlibrary/library.type
+  register : libtype
