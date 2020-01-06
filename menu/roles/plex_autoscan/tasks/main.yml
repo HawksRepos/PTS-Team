@@ -137,5 +137,5 @@
   when: pas_online.stat.exists
   
 - name: Plex Image - Docker User
-  shell: 'cat /var/plexguide/pgscan/pimage'
-  register: pimage
+  shell: 'cat /var/plexguide/pgscan/plex.user'
+  register: plex_user
