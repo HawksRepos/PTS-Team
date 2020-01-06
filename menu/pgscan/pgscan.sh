@@ -273,6 +273,35 @@ EOF
   *) fxmatch ;;
   esac
 }
+pimage() {
+  tee <<-EOF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Plex_AutoScan - Plex Image
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTE : 
+Please can you select which plex image you have installed. You can do this
+by going to your Portainer (portainer.domain.com) and by looking at the 
+plex container you can see which image you have used to install.
+
+
+[1] plexinc/pms-docker
+[2] linuxserver/plex
+
+[Z] - Exit
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EOF
+
+  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+
+  case $typed in
+  1) echo "plex" >/var/plexguide/pgscan/pimage && question1 ;;
+  2) echo "abc" >/var/plexguide/pgscan/pimage && question1 ;;
+  z) question1 ;;
+  Z) question1 ;;
+  *) pimage ;;
+  esac
+}
 pasuideploy() {
 ui="/opt/appdata/pgui"
 if [[ -d "$ui" ]]; then cp -rv /opt/plexguide/menu/pgui/templates/autoscan-index.php /opt/appdata/pgui/index.php; fi
@@ -285,6 +314,7 @@ if [[ -d "$ui" ]]; then cp -rv /opt/plexguide/menu/pgui/templates/index.php /opt
 question1() {
 langfa=$(cat /var/plexguide/pgscan/fixmatch.status)
 lang=$(cat /var/plexguide/pgscan/fixmatch.lang)
+pimage=$(cat /var/plexguide/pgscan/pimage)
 tokenstatus
 deploycheck
   tee <<-EOF
@@ -297,6 +327,7 @@ NOTE : Plex_AutoScan are located in /opt/plex_autoscan
 
 [1] Deploy Plex Token                     [ $pstatus ]
 [2] Fixmatch Lang                         [ $lang | $langfa ]
+[3] Plex Container Image                  [ $pimage ]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [A] Deploy Plex-Auto-Scan                 [ $dstatus ]
@@ -318,6 +349,7 @@ EOF
   case $typed in
   1) tokencreate && clear && question1 ;;
   2) fxmatch && clear && question1 ;;
+  3) pimage && clear && question1 ;;
   A) ansible-playbook /opt/plexguide/menu/pg.yml --tags plex_autoscan && pasuideploy && clear && pasdeployed && question1 ;;
   a) ansible-playbook /opt/plexguide/menu/pg.yml --tags plex_autoscan && pasuideploy && clear && pasdeployed && question1 ;;
   D) showupdomain && clear && question1 ;;
