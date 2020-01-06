@@ -371,5 +371,6 @@ tokenstatus
 ippart
 variable /var/plexguide/pgscan/fixmatch.lang "en"
 variable /var/plexguide/pgscan/fixmatch.status "false"
+variable /var/plexguide/pgscan/pimage "abc"
 deploycheck
 question1
