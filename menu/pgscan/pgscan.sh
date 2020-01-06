@@ -295,8 +295,8 @@ EOF
   read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
 
   case $typed in
-  1) echo "plex" >/var/plexguide/pgscan/pimage && question1 ;;
-  2) echo "abc" >/var/plexguide/pgscan/pimage && question1 ;;
+  1) echo "plex" >/var/plexguide/pgscan/plex.user && question1 ;;
+  2) echo "abc" >/var/plexguide/pgscan/plex.user && question1 ;;
   z) question1 ;;
   Z) question1 ;;
   *) pimage ;;
@@ -314,7 +314,7 @@ if [[ -d "$ui" ]]; then cp -rv /opt/plexguide/menu/pgui/templates/index.php /opt
 question1() {
 langfa=$(cat /var/plexguide/pgscan/fixmatch.status)
 lang=$(cat /var/plexguide/pgscan/fixmatch.lang)
-pimage=$(cat /var/plexguide/pgscan/pimage)
+puser=$(cat /var/plexguide/pgscan/plex.user)
 tokenstatus
 deploycheck
   tee <<-EOF
@@ -327,7 +327,7 @@ NOTE : Plex_AutoScan are located in /opt/plex_autoscan
 
 [1] Deploy Plex Token                     [ $pstatus ]
 [2] Fixmatch Lang                         [ $lang | $langfa ]
-[3] Plex Container Image                  [ $pimage ]
+[3] Plex Container Image                  [ $puser ]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [A] Deploy Plex-Auto-Scan                 [ $dstatus ]
@@ -371,6 +371,6 @@ tokenstatus
 ippart
 variable /var/plexguide/pgscan/fixmatch.lang "en"
 variable /var/plexguide/pgscan/fixmatch.status "false"
-variable /var/plexguide/pgscan/pimage "abc"
+variable /var/plexguide/pgscan/plex.user "abc"
 deploycheck
 question1
