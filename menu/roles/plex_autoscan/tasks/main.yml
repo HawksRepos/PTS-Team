@@ -135,3 +135,7 @@
     name: plex_autoscan
     state: restarted
   when: pas_online.stat.exists
+  
+- name: Plex Image - Docker User
+  shell: 'cat /var/plexguide/pgscan/pimage'
+  register: pimage
