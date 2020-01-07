@@ -44,7 +44,7 @@ display: flex;
 .autologs {
 background: #FFFFF;
 height: 150px;
-overflow: auto;
+overflow: 100%;
 width: 100%;
 border: 1px solid #000;
 padding: 10px;
