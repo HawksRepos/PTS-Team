@@ -36,7 +36,7 @@ a:visited {
 background: #FFFFF;
 height: 350px;
 overflow: auto;
-width: auto;
+width: 100%;
 border: 1px solid #000;
 padding: 10px;
 display: flex;
@@ -45,7 +45,7 @@ display: flex;
 background: #FFFFF;
 height: 150px;
 overflow: auto;
-width: auto;
+width: 100%;
 border: 1px solid #000;
 padding: 10px;
 }
@@ -53,7 +53,7 @@ padding: 10px;
 background: #FFFFF;
 height: 150px;
 overflow: auto;
-width: auto;
+width: 100%;
 border: 1px solid #000;
 padding: 10px;
 }
