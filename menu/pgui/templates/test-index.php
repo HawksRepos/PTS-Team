@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="refresh" content="25" charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="viewport" content="width=100%, initial-scale=1.0, user-scalable=yes">
 	<meta name="robots" content="noindex, nofollow, noarchive" />
     <meta http-equiv="cache-control" content="no-cache" /> 
 <title>Com-UI</title>
