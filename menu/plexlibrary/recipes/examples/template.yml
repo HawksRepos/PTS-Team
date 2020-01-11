@@ -1,22 +1,22 @@
 # Supported types: movie, tv
-library_type: '{{ltype.stdout}}'
+library_type: '{{ ltype.stdout }}'
 
 # Source list(s)
 # * Experiment with the limits and order of the URLs below
 #   to get a different balance.
 source_list_urls:
-  - '{{slurl.stdout}}'
+  - '{{ slurl.stdout }}'
 
 # Source library details
 source_libraries:
-  - name: '{{lytpe.stdout}}'
+  - name: '{{ lytpe.stdout }}'
     folders:
-      - '/mnt/unionfs/tv'
+      - '{{ spath.stdout }}'
 
 # New library details
 new_library:
-  name: 'Movies - Trending'
-  folder: '/mnt/plexlib/movies/Movies - Trending/'
+  name: '{{ rname.stdout }}'
+  folder: '/mnt/plexlib/{{ ltyp.stdout }}/{{ rname.stdout }}/'
   sort: true
   sort_title:
     format: '{number}. {title}'

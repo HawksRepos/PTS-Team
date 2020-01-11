@@ -10,8 +10,8 @@ source /opt/plexguide/menu/functions/install.sh
 # KEY VARIABLE RECALL & EXECUTION
 fid1="/var/plexguide/plexlibrary"
 fid2="/mnt/plexlib"
-fid3="/mnt/plexlib/movies"
-fid4="/mnt/plexlib/tv"
+fid3="/mnt/plexlib/Movie"
+fid4="/mnt/plexlib/TV"
 if [[ ! -d "$fid1" && ! -d "$fid2" && ! -d "$fid3" && ! -d "$fid4" ]]; then
 mkdir -p "$fid" && apt-get update -yqq
 sleep 0.5
@@ -129,7 +129,13 @@ selection2() {
 🚀 Source List URL?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Visit https://github... to look for example lists.
+Visit https://github.com/porkie02/trakt to look for example lists.
+Please make sure the list URL has 'https://api.trakt.tv' at the
+beggining and '/items/movies' or '/items/shows' at the end.
+
+Example:-
+
+'https://api.trakt.tv/users/justin/lists/imdb-top-rated-movies/items/movies'
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
@@ -157,10 +163,10 @@ selection4() {
   tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Path to Movies/TV Files?
+🚀 Path to Plex Movies/TV Files?
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Example: '/mnt/unionfs/movies'
+Example: '/mnt/unionfs/movies' or 'mnt/unionfs/tv'
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
@@ -188,7 +194,7 @@ question1() {
 deploycheck
   ltype=$(cat /var/plexguide/plexlibrary/library.type)
   slurl=$(cat /var/plexguide/plexlibrary/source.url)
-  plibs=$(cat /var/plexguide/plexlibrary/plex.library)
+  spath=$(cat /var/plexguide/plexlibrary/plex.library)
   fpath=$(cat /var/plexguide/plexlibrary/file.path)
   rname=$(cat /var/plexguide/plexlibrary/recipe.name)
 
@@ -200,7 +206,7 @@ deploycheck
 
 [1] Library Type?                         [ $ltype ]
 [2] Source List URL?                      [ $slurl ]
-[3] Plex Source Library?                  [ $plibs ]
+[3] Plex Source Library?                  [ $spath ]
 [4] Path to Movie/TV files                [ $fpath ]
 [5] Recipe Name                           [ $rname ]
 

@@ -37,6 +37,21 @@
   register: spath
   ignore_errors: True
 
+- name: Recipe Name
+  shell: 'cat /var/plexguide/plexlibrary/recipe.name'
+  register: rname
+  ignore_errors: True
+
+- name: Library Type
+  shell: 'cat /var/plexguide/plexlibrary/library.type'
+  register: ltype
+  ignore_errors: True
+
+- name: Trakt List Source URL
+  shell: 'cat /var/plexguide/plexlibrary/source.url'
+  register: slurl
+  ignore_errors: True
+
 - name: Clone python-plexlibrary
   git:
     repo: "https://github.com/adamgot/python-plexlibrary.git"
@@ -68,22 +83,11 @@
 
 - name: Add plex url to config file
   shell: |
-    yyq w -i /opt/appdata/python-plexlibrary/config.yml plex.baseurl 'https://plex.{{ user.domain }}:443'
+    yyq w -i /opt/appdata/python-plexlibrary/config.yml plex.baseurl 'https://plex./%7B%7B user.domain }}:443'
   become: yes
   become_user: '1000'
 
-- name: "Copy example recipes to '/opt/python-plexlibrary' folder"
-  copy:
-    src: "{{ item }}"
-    dest: "/opt/appdata/python-plexlibrary/recipes/examples/cloudbox/"
-    owner: '1000'
-    group: '1000'
-    mode: 0664
-    force: yes
-  with_fileglob:
-    - "recipes/*.yml"
-
-- name: "Copy 'plexlibrary.sh' to '/opt/python-plexlibrary' folder"
+- name: "Copy 'plexlibrary.sh' to '/opt/appdata/python-plexlibrary' folder"
   copy:
     src: "plexlibrary.sh"
     dest: "/opt/appdata/python-plexlibrary/plexlibrary.sh"
@@ -131,15 +135,15 @@
   debug:
     msg: "Plex Auth Token: {{ plex_auth_token.stdout }}"
 
+- name: Remove old Install
+  shell: 'sudo rm -rf /opt/appdata/python_plexlibrary'
+
 - name: Create plex_library directories
   file: "path={{ item }} state=directory mode=0775 owner=1000 group=1000 recurse=yes"
   with_items:
     - /opt/appdata/python_plexlibrary
 
-- name: Remove old Install
-  shell: 'sudo rm -rf /opt/appdata/python_plexlibrary'
-
-- name: Clone plex_dupefinder == HEAD
+- name: Clone python_plexlibrary == HEAD
   git:
     repo: https://github.com/adamgot/python-plexlibrary.git
     dest: /opt/appdata/python_plexlibrary
@@ -148,7 +152,7 @@
     force: yes
   ignore_errors: yes
 
-- name: Clone plex_dupefinder repo == master
+- name: Clone python_plexlibrary repo == master
   git:
     repo: https://github.com/adamgot/python-plexlibrary.git
     dest: /opt/appdata/python_plexlibrary
@@ -206,12 +210,7 @@
     - '/opt/appdata/python_plexlibrary/assets'
     - '/opt/appdata/python_plexlibrary/.gitignore'
 
-- name: "Copy example recipes to '/opt/python-plexlibrary' folder"
-  copy:
-    src: "{{ item }}"
-    dest: "/opt/appdata/python-plexlibrary/recipes/examples/cloudbox/"
-
-- name: "Copy 'plexlibrary.sh' to '/opt/python-plexlibrary' folder"
+- name: "Copy 'plexlibrary.sh' to '/opt/appdata/python-plexlibrary' folder"
   copy:
     src: "plexlibrary.sh"
     dest: "/opt/appdata/python-plexlibrary/plexlibrary.sh"
