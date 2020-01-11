@@ -9,6 +9,9 @@ source /opt/plexguide/menu/functions/functions.sh
 source /opt/plexguide/menu/functions/install.sh
 # KEY VARIABLE RECALL & EXECUTION
 fid="/var/plexguide/plexlibrary"
+    "/mnt/plexlib"
+    "/mnt/plexlib/movies"
+    "/mnt/plexlib/tv"
 if [[ ! -d "$fid" ]]; then
 mkdir -p "$fid" && apt-get update -yqq
 sleep 0.5
@@ -29,8 +32,9 @@ variable() {
   if [ ! -e "$file" ]; then echo "$2" >$1; fi
 }
 
+# All DONE
 doneenter(){
- echo
+  echo
   read -p 'All done | PRESS [ENTER] ' typed </dev/tty
   question1
 }
@@ -123,7 +127,7 @@ Visit https://github... to look for example lists.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+  read -p '↘️  Type URL | Press [ENTER]: ' typed </dev/tty
 
   echo $typed >/var/plexguide/plexlibrary/source.url && question1 ;;
 }
@@ -142,6 +146,7 @@ EOF
 
   echo $typed >/var/plexguide/plexlibrary/plex.library && question1 ;;
 }
+
 selection4() {
   tee <<-EOF
 
