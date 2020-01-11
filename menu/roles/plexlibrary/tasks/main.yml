@@ -205,3 +205,13 @@
     - '/opt/appdata/python_plexlibrary/.github'
     - '/opt/appdata/python_plexlibrary/assets'
     - '/opt/appdata/python_plexlibrary/.gitignore'
+
+- name: "Copy example recipes to '/opt/python-plexlibrary' folder"
+  copy:
+    src: "{{ item }}"
+    dest: "/opt/appdata/python-plexlibrary/recipes/examples/cloudbox/"
+    
+- name: "Copy 'plexlibrary.sh' to '/opt/python-plexlibrary' folder"
+  copy:
+    src: "plexlibrary.sh"
+    dest: "/opt/appdata/python-plexlibrary/plexlibrary.sh"
