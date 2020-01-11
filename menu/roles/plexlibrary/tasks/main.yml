@@ -125,11 +125,11 @@
 
 - name: Set plex.user fact | token
   shell: 'cat /var/plexguide/plexlibrary/plex.token'
-  register: plex_token
+  register: plex_auth_token
 
 - name: Display Plex Auth Token
   debug:
-    msg: "Plex Auth Token: {{ plex_token.stdout }}"
+    msg: "Plex Auth Token: {{ plex_auth_token.stdout }}"
 
 - name: Create plex_library directories
   file: "path={{ item }} state=directory mode=0775 owner=1000 group=1000 recurse=yes"
