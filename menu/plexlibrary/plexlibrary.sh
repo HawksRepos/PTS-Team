@@ -8,11 +8,11 @@
 source /opt/plexguide/menu/functions/functions.sh
 source /opt/plexguide/menu/functions/install.sh
 # KEY VARIABLE RECALL & EXECUTION
-fid="/var/plexguide/plexlibrary"
-    "/mnt/plexlib"
-    "/mnt/plexlib/movies"
-    "/mnt/plexlib/tv"
-if [[ ! -d "$fid" ]]; then
+fid1="/var/plexguide/plexlibrary"
+fid2="/mnt/plexlib"
+fid3="/mnt/plexlib/movies"
+fid4="/mnt/plexlib/tv"
+if [[ ! -d "$fid1" && ! -d "$fid2" && ! -d "$fid3" && ! -d "$fid4" ]]; then
 mkdir -p "$fid" && apt-get update -yqq
 sleep 0.5
 apt-get install python-pip -yqq
