@@ -236,11 +236,11 @@ EOF
 }
 
 # FUNCTIONS END ##############################################################
+tokencreate
 variable /var/plexguide/plexlibrary/library.type "NON-SET"
 variable /var/plexguide/plexlibrary/source.url "NON-SET"
 variable /var/plexguide/plexlibrary/plex.library "NON-SET"
 variable /var/plexguide/plexlibrary/file.path "NON-SET"
 variable /var/plexguide/plexlibrary/recipe.name "NON-SET"
 deploycheck
-tokencreate
 question1
