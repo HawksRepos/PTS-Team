@@ -46,6 +46,12 @@ badinput() {
   question1
 }
 
+#ADD PLEX TOKEN
+tokencreate() {
+X_PLEX_TOKEN=$(sudo cat "/opt/appdata/plex/database/Library/Application Support/Plex Media Server/Preferences.xml" | sed -e 's;^.* PlexOnlineToken=";;' | sed -e 's;".*$;;' | tail -1)
+echo $X_PLEX_TOKEN >/var/plexguide/addherethefolder/plex.token
+}
+
 api() {
   tee <<-EOF
 
@@ -236,4 +242,5 @@ variable /var/plexguide/plexlibrary/plex.library "NON-SET"
 variable /var/plexguide/plexlibrary/file.path "NON-SET"
 variable /var/plexguide/plexlibrary/recipe.name "NON-SET"
 deploycheck
+tokencreate
 question1
