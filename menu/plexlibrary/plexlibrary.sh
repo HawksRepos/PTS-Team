@@ -49,7 +49,7 @@ badinput() {
 #ADD PLEX TOKEN
 tokencreate() {
 X_PLEX_TOKEN=$(sudo cat "/opt/appdata/plex/database/Library/Application Support/Plex Media Server/Preferences.xml" | sed -e 's;^.* PlexOnlineToken=";;' | sed -e 's;".*$;;' | tail -1)
-echo $X_PLEX_TOKEN >/var/plexguide/addherethefolder/plex.token
+echo $X_PLEX_TOKEN >/var/plexguide/plexlibrary/plex.token
 }
 
 api() {
