@@ -76,7 +76,7 @@
   shell: 'cat /var/plexguide/traktarr/pgtrak.minimumavailability'
   register: minimumavailability
   ignore_errors: True
- 
+
 - name: Clone python-plexlibrary
   git:
     repo: "https://github.com/adamgot/python-plexlibrary.git"
@@ -161,3 +161,86 @@
     job: "/opt/python-plexlibrary/plexlibrary.sh"
     special_time: daily
     state: present
+    
+- name: Set plex.user fact | token
+  shell: 'cat /var/plexguide/plexlibrary/plex.token'
+  register: plex_auth_token
+
+- name: Display Plex Auth Token
+  debug:
+    msg: "Plex Auth Token: {{ plex_auth_token.stdout }}"
+
+- name: Create plex_library directories
+  file: "path={{ item }} state=directory mode=0775 owner=1000 group=1000 recurse=yes"
+  with_items:
+    - /opt/appdata/python_plexlibrary
+
+- name: Remove old Install
+  shell: 'sudo rm -rf /opt/appdata/python_plexlibrary'
+
+- name: Clone plex_dupefinder == HEAD
+  git:
+    repo: https://github.com/adamgot/python-plexlibrary.git
+    dest: /opt/appdata/python_plexlibrary
+    clone: yes
+    version: HEAD
+    force: yes
+  ignore_errors: yes
+
+- name: Clone plex_dupefinder repo == master
+  git:
+    repo: https://github.com/adamgot/python-plexlibrary.git
+    dest: /opt/appdata/python_plexlibrary
+    clone: yes
+    version: master
+    force: yes
+  ignore_errors: yes
+
+- name: Install pip requirements
+  pip:
+    requirements: /opt/appdata/python_plexlibrary/requirements.txt
+    executable: pip3
+
+- name: Check config exists
+  stat:
+    path: "/opt/appdata/python_plexlibrary/config.json"
+  register: plex_library_config
+
+- name: Import default config
+  template:
+    src: config.json.j2
+    dest: /opt/appdata/python_plexlibrary/config.json
+    owner: '1000'
+    group: '1000'
+    mode: 0775
+    force: no
+  when: not plex_library_config.stat.exists
+
+- name: Set plexlibrary.py as executable
+  file:
+    path: /opt/appdata/python_plexlibrary/plexlibrary.py
+    owner: '1000'
+    group: '1000'
+    mode: a+x
+
+- name: "Create /usr/local/bin symlink"
+  file:
+    src: "/opt/appdata/python_plexlibrary/plexlibrary.py"
+    dest: "/usr/local/bin/plexlibrary"
+    state: link
+
+# scripts permissions
+- name: 'Setting permissions on scripts'
+  shell: 'chown -cR 1000:1000 /opt/appdata/python_plexlibrary'
+
+# scripts permissions
+- name: 'Setting permissions on scripts'
+  shell: 'chmod -cR 775 /opt/appdata/python_plexlibrary'
+
+- name: Remove .githube folder and .git files
+  file: "path={{ item }} state=absent"
+  with_items:
+    - '/opt/appdata/python_plexlibrary/.git'
+    - '/opt/appdata/python_plexlibrary/.github'
+    - '/opt/appdata/python_plexlibrary/assets'
+    - '/opt/appdata/python_plexlibrary/.gitignore'
