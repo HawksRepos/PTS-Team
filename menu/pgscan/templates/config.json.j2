@@ -1,9 +1,9 @@
 {
    "DOCKER_NAME":"plex",
    "GOOGLE": {
-     "ENABLED": false,
-     "CLIENT_ID": "",
-     "CLIENT_SECRET": "",
+     "ENABLED": {{pasdrive.stdout}},
+     "CLIENT_ID": "{{clientid.stdout}}",
+     "CLIENT_SECRET": "{{clientsecret.stdout}}",
      "ALLOWED": {
        "FILE_PATHS": [
          "My Drive/Media/Movies/",
@@ -24,8 +24,8 @@
          "video"
        ]
      },
-     "TEAMDRIVE": false,
-     "TEAMDRIVES": [],
+     "TEAMDRIVE": {{tdrive.stdout}},
+     "TEAMDRIVES": [{{teamdrive.stdout}}],
      "POLL_INTERVAL": 120,
      "SHOW_CACHE_LOGS": false
    },
