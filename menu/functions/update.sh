@@ -12,7 +12,7 @@ sudocheck() {
     tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⛔️  You Must Execute as a SUDO USER (with sudo) or as ROOT!
+⚠️  You must execute as a SUDO USER (with sudo) or as ROOT!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 EOF
@@ -31,12 +31,12 @@ tee <<-EOF
 mergerfs installed version = 		$mgstored
 mergerfs latest version    = 		$mgversion
 
-[Y] UPDATE to lateste version
+[Y] UPDATE to latest version
 
 [Z] Exit
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
 
   case $typed in
 
@@ -55,18 +55,18 @@ rcstored="$(rclone --version | awk '{print $2}' | tail -n 3 | head -n 1)"
       tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- rClone Update Panel  			$rcstored
+ Rclone update panel  			$rcstored
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-rclone installed version = 		$rcstored
-rclone latest version 	 = 		$rcversion
+Rclone installed version = 		$rcstored
+Rclone latest version 	 = 		$rcversion
 
-[Y] UPDATE to lateste version
+[Y] UPDATE to latest version
 
 [Z] Exit
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+  read -p '↘️  Type number | Press [ENTER]: ' typed </dev/tty
 
   case $typed in
   Y) ansible-playbook /opt/plexguide/menu/pg.yml --tags rcloneinstall && $check ;;

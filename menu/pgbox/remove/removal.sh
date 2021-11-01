@@ -5,6 +5,7 @@
 # URL:        https://pgblitz.com - http://github.pgblitz.com
 # GNU:        General Public License v3.0
 ################################################################################
+typed="${typed,,}"
 rm -rf /tmp/backup.build 1>/dev/null 2>&1
 rm -rf /tmp/backup.list 1>/dev/null 2>&1
 rm -rf /tmp/backup.final 1>/dev/null 2>&1
@@ -24,13 +25,13 @@ sed -i -e "/portainer/d" /tmp/backup.list
 #### Commenting Out To Let User See
 num=0
 while read p; do
-  let "num++"
-  echo -n $p >>/tmp/backup.final
-  echo -n " " >>/tmp/backup.final
-  if [[ "$num" == 7 ]]; then
-    num=0
-    echo " " >>/tmp/backup.final
-  fi
+    let "num++"
+    echo -n $p >>/tmp/backup.final
+    echo -n " " >>/tmp/backup.final
+    if [[ "$num" == 7 ]]; then
+        num=0
+        echo " " >>/tmp/backup.final
+    fi
 done </tmp/backup.list
 
 running=$(cat /tmp/backup.final)
@@ -39,12 +40,12 @@ running=$(cat /tmp/backup.final)
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀  App Removal Interface
+🛈  App Removal Interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-⚠️  Backup Data if Required! Removes Local App Data!
+⚠️ This will remove your app data folder. Make sure you backup!
 
-💾 Current Installed Apps or Folders
+💾 Apps currently installed
 
 $running
 
@@ -55,52 +56,52 @@ $running
 EOF
 read -p '🌍 Type APP for QUEUE | Press [[ENTER]: ' typed </dev/tty
 
-if [[ "$typed" == "exit" || "$typed" == "Exit" || "$typed" == "EXIT" || "$typed" == "z" || "$typed" == "Z" ]]; then exit; fi
+if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
 
 tcheck=$(echo $running | grep "\<$typed\>")
 if [[ "$tcheck" == "" ]]; then
   tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⛔️  WARNING! - Type an Application Name! Case Senstive! Restarting!
+⚠️  WARNING! - Type an Application Name! Case Senstive! Restarting!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-  sleep 1.5
-     bash /opt/plexguide/menu/pgbox/remove/removal.sh
-  exit
+    sleep 1.5
+    bash /opt/plexguide/menu/pgbox/remove/removal.sh
+    exit
 fi
 
 if [[ "$typed" == "" ]]; then
   tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⛔️  WARNING! - The App Name Cannot Be Blank!
+⚠️  WARNING! - Cannot be left blank. Please type an app
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-  sleep 3
-     bash /opt/traefik/tld.sh
-  exit
+    sleep 3
+    bash /opt/traefik/tld.sh
+    exit
 fi
 
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💎  PASS: Uninstalling - $typed
+💎  Now uninstalling - $typed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
 sleep 1.5
-##check for running docker 
+##check for running docker
 drunning=$(docker ps --format '{{.Names}}' | grep "$typed")
 if [[ "$drunning" == "$typed" ]]; then
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🍖  NOM NOM - Stopping | Removing > $typed Docker Container
+🍖  NOM NOM - Stopping container & uninstalling > $typed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-     docker stop $typed 1>/dev/null 2>&1
-     docker rm $typed 1>/dev/null 2>&1
-	 rm -rf /opt/appdata/$typed
+    docker stop $typed 1>/dev/null 2>&1
+    docker rm $typed 1>/dev/null 2>&1
+    rm -rf /opt/appdata/$typed
 fi
 
 if [[ "$drunning" != "$typed" ]]; then
@@ -110,14 +111,14 @@ tee <<-EOF
 🍖  NOM NOM - Removing /opt/appdata/$typed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
-	 rm -rf /opt/appdata/$typed
+    rm -rf /opt/appdata/$typed
 fi
 
 file="/opt/coreapps/apps/$typed.yml"
 if [[ -e "$file" ]]; then
-  check=$(cat /opt/coreapps/apps/$typed.yml | grep '##PG-Community')
-  if [[ "$check" == "##PG-Community" ]]; then rm -r /opt/communityapps/apps/$typed.yml; fi
-  rm -rf /var/plexguide/community.app
+    check=$(cat /opt/coreapps/apps/$typed.yml | grep '##PG-Community')
+    if [[ "$check" == "##PG-Community" ]]; then rm -r /opt/communityapps/apps/$typed.yml; fi
+    rm -rf /var/plexguide/community.app
 fi
 
 sleep 1.5
@@ -125,7 +126,7 @@ sleep 1.5
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅️  PASS: Uninstalled - $typed - Exiting!
+✅️  Successfully uninstalled $typed - Now exiting...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
 sleep 2

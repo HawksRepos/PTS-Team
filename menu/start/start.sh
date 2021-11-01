@@ -6,6 +6,10 @@
 # GNU:        General Public License v3.0
 ################################################################################
 # Create Variables (If New) & Recall
+source /opt/plexguide/menu/functions/start.sh
+source /opt/plexguide/menu/functions/pgvault.func
+typed="${typed,,}"
+
 pcloadletter() {
   filevg="/var/plexguide"
   touch $filevg/pgclone.transport
@@ -39,7 +43,7 @@ primestart() {
 wisword=$(/usr/games/fortune -as | sed "s/^/ /")
 
 varstart() {
-  ###################### FOR VARIABLS ROLE SO DOESNT CREATE RED - START
+  ###################### FOR VARIABLES ROLE SO DOESNT CREATE RED - START
   filevg="/var/plexguide"
   if [ ! -e "$filevg" ]; then
     mkdir -p $filevg/logs 1>/dev/null 2>&1
@@ -53,7 +57,7 @@ varstart() {
     chmod -R 775 $fileag 1>/dev/null 2>&1
   fi
 
-  ###################### FOR VARIABLS ROLE SO DOESNT CREATE RED - START
+  ###################### FOR VARIABLES ROLE SO DOESNT CREATE RED - START
   variable $filevg/pgfork.project "NOT-SET"
   variable $filevg/pgfork.version "NOT-SET"
   variable $filevg/tld.program "NOT-SET"
@@ -66,6 +70,7 @@ varstart() {
   variable $filevg/transcode.path "standard"
   variable $filevg/pgclone.transport "NOT-SET"
   variable $filevg/plex.claim ""
+  variable $filevg/auto.update "NOT-SET"
   
   #### Temp Fix - Fixes Bugged AppGuard
   serverht=$(cat /var/plexguide/server.ht)
@@ -98,7 +103,7 @@ varstart() {
 
   # For PG UI - Force Variable to Set
   ports=$(cat /var/plexguide/server.ports)
-  if [ "$ports" == "" ]; then
+if [ "$ports" == "" ]; then
     echo "Open" >$filevg/pg.ports
   else echo "Closed" >$filevg/pg.ports; fi
 
@@ -153,65 +158,32 @@ menuprime1
 else menuprime2; fi
 }
 
-menuprime1() {
-  transport=$(cat /var/plexguide/pg.transport)
-
-  # Menu Interface
-  tee <<-EOF
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🌎 $transport | Version: $pgnumber | ID: $serverid
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🌵 Disk Used Space: $used of $capacity | $percentage Used Capacity
-EOF
-
-  # Displays Second Drive If GCE
-  edition=$(cat /var/plexguide/pg.server.deploy)
-  if [ "$edition" == "feeder" ]; then
-    used_gce=$(df -h /mnt --local | tail -n +2 | awk '{print $3}')
-    capacity_gce=$(df -h /mnt --local | tail -n +2 | awk '{print $2}')
-    percentage_gce=$(df -h /mnt --local | tail -n +2 | awk '{print $5}')
-    echo " GCE Disk Used Space: $used_gce of $capacity_gce | $percentage_gce Used Capacity"
-  fi
-
-  disktwo=$(cat "/var/plexguide/server.hd.path")
-  if [ "$edition" != "feeder" ]; then
-    used_gce2=$(df -h "$disktwo" --local | tail -n +2 | awk '{print $3}')
-    capacity_gce2=$(df -h "$disktwo" --local | tail -n +2 | awk '{print $2}')
-    percentage_gce2=$(df -h "$disktwo" --local | tail -n +2 | awk '{print $5}')
-
-    if [[ "$disktwo" != "/mnt" ]]; then
-      echo " 2nd Disk Used Space: $used_gce2 of $capacity_gce2 | $percentage_gce2 Used Capacity"
-    fi
-  fi
+menuprime1() { # GCE Optimised Menu
+transport=$(cat /var/plexguide/pg.transport)
+top_menu
+disk_space_used_space
 
   # Declare Ports State
   ports=$(cat /var/plexguide/server.ports)
 
-  if [ "$ports" == "" ]; then
-    ports="OPEN"
-  else ports="CLOSED"; fi
+if [ "$ports" == "" ]; then
+    echo "Open" >$filevg/pg.ports
+  else echo "Closed" >$filevg/pg.ports; fi
 
   tee <<-EOF
      -- GCE optimized surface --
 
-[1]  PTS-Traefik    : Reverse Proxy
+[1]  Traefik        : Reverse Proxy | Domain Setup
 [2]  Port Guard     : [$ports] Protects the Server App Ports
-[3]  PTS-Shield     : Enable Google's OAuthentication Protection
-[4]  PTS-Clone      : Mount Transport
-[5]  PTS-Apps       : Apps
-[6]  PTS-Vault      : Backup & Restore
-[7]  Traktarr       : Fill Sonarr/Radarr over Trakt lists.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[Z]  Exit
-
-"$wisword"
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[3]  Authelia       : Enable Authelia
+[4]  Mount          : Mount Cloud Based Storage
+[5]  Apps           : Apps ~ Core, Community & Removal
+[6]  Vault          : Backup & Restore
+[7]  Traktarr       : Fill arrs with Trakt lists
 EOF
+end_menu
   # Standby
-  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
 
   case $typed in
   1) clear && bash /opt/plexguide/menu/pgcloner/traefik.sh && clear && primestart ;;
@@ -219,98 +191,136 @@ EOF
   3) clear && bash /opt/plexguide/menu/shield/pgshield.sh && clear && primestart ;;
   4) clear && bash /opt/plexguide/menu/pgcloner/pgclone.sh && clear && primestart ;;
   5) clear && bash /opt/plexguide/menu/pgbox/select.sh  && clear && primestart ;;
-  6) clear && bash /opt/plexguide/menu/pgcloner/pgvault.sh  && clear && primestart ;;
+  6) clear && bash /opt/plexguide/menu/pgvault/pgvault.sh  && clear && primestart ;;
   7) clear && bash /opt/plexguide/menu/traktarr/traktarr.sh  && clear && primestart ;;
   z) clear && bash /opt/plexguide/menu/interface/ending.sh &&  exit ;;
   Z) clear && bash /opt/plexguide/menu/interface/ending.sh && exit ;;
   *) primestart ;;
   esac
 }
+networking() {
+  top_menu
+  sub_menu_networking
+  end_menu
+read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
+    if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/pgcloner/traefik.sh; fi
+    if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
+    main_menu_options
 
-menuprime2() {
+}
+security() {
+  top_menu
+  sub_menu_security
+  end_menu
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
+   if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/shield/pgshield.sh; fi
+   if [[ "${typed}" == "d" ]]; then clear && bash /opt/plexguide/menu/portguard/portguard.sh; fi
+   if [[ "${typed}" == "c" ]]; then clear && bash /opt/plexguide/menu/pgbox/core/core.sh; fi
+   if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
+   main_menu_options
+}
+
+mount() {
+  top_menu
+  sub_menu_mount
+  end_menu
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
+   if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/pgcloner/pgclone.sh && clear && primestart; fi
+   if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/portguard/portguard.sh; fi
+   if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/pgbox/core/core.sh; fi
+   if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
+   main_menu_options
+}
+apps() {
+  top_menu
+  sub_menu_app
+  end_menu
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
+    if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/pgbox/core/core.sh; fi
+    if [[ "${typed}" == "d" ]]; then clear && bash /opt/plexguide/menu/pgbox/community/community.sh; fi
+    if [[ "${typed}" == "c" ]]; then clear && bash /opt/plexguide/menu/pgbox/personal/personal.sh; fi
+    if [[ "${typed}" == "r" ]]; then clear && bash /opt/plexguide/menu/pgbox/remove/removal.sh; fi
+    if [[ "${typed}" == "f" ]]; then clear && bash /opt/plexguide/menu/pgbox/remove/removal.sh; fi
+    if [[ "${typed}" == "t" ]]; then clear && bash /opt/plexguide/menu/pgbox/customparts/autobackup.sh; fi
+    if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
+    main_menu_options
+}
+vault() {
+  source /opt/plexguide/menu/functions/pgvault.func
+  top_menu
+  sub_menu_vault
+  end_menu
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
+    if [[ "${typed}" == "e" ]]; then clear && bash /opt/plexguide/menu/pgvault/pgvault.sh; fi
+    if [[ "${typed}" == "d" ]]; then clear && backup_all_start; fi
+    if [[ "${typed}" == "c" ]]; then clear && initial && pgboxrecall && apprecall && vaultrestore; fi
+    if [[ "${typed}" == "r" ]]; then clear && restore_all_start; fi
+    if [[ "${typed}" == "f" ]]; then clear && bash /opt/plexguide/menu/pgvault/location.sh; fi
+    if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
+    main_menu_options
+}
+menuprime2() { # 
+  #welcome="Welcome to Pandaura. Thanks for being a part of the community"
+  #firstRun=True
+#def writeFile(number):
+ #   global firstRun
+  #  if firstRun:
+   #     print("${welcome}")
+    #    firstRun=False
+    #print(str(number))
+
+#for i in range(10):
+ #   writeFile(i)
+ #downloadpg
   transport=$(cat /var/plexguide/pg.transport)
-
-  # Menu Interface
-  tee <<-EOF
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🌎 $transport | Version: $pgnumber | ID: $serverid
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🌵 Disk Used Space: $used of $capacity | $percentage Used Capacity
-EOF
-
-  # Displays Second Drive If GCE
-  edition=$(cat /var/plexguide/pg.server.deploy)
-  if [ "$edition" == "feeder" ]; then
-    used_gce=$(df -h /mnt --local | tail -n +2 | awk '{print $3}')
-    capacity_gce=$(df -h /mnt --local | tail -n +2 | awk '{print $2}')
-    percentage_gce=$(df -h /mnt --local | tail -n +2 | awk '{print $5}')
-    echo " GCE Disk Used Space: $used_gce of $capacity_gce | $percentage_gce Used Capacity"
-  fi
-
-  disktwo=$(cat "/var/plexguide/server.hd.path")
-  if [ "$edition" != "feeder" ]; then
-    used_gce2=$(df -h "$disktwo" --local | tail -n +2 | awk '{print $3}')
-    capacity_gce2=$(df -h "$disktwo" --local | tail -n +2 | awk '{print $2}')
-    percentage_gce2=$(df -h "$disktwo" --local | tail -n +2 | awk '{print $5}')
-
-    if [[ "$disktwo" != "/mnt" ]]; then
-      echo " 2nd Disk Used Space: $used_gce2 of $capacity_gce2 | $percentage_gce2 Used Capacity"
-    fi
-  fi
-
+top_menu
+disk_space_used_space
+main_menu
   # Declare Ports State
   ports=$(cat /var/plexguide/server.ports)
 
   if [ "$ports" == "" ]; then
-    ports="OPEN"
-  else ports="CLOSED"; fi
+    ports="🔴 "
+  else ports="🟢"; fi
 
-  tee <<-EOF
-
-[1]  PTS-Traefik    : Reverse Proxy
-[2]  Port Guard     : [$ports] Protects the Server App Ports
-[3]  PTS-Shield     : Enable Google's OAuthentication Protection
-[4]  PTS-Clone      : Mount Transport
-[5]  PTS-Apps       : Apps ~ Core, Community & Removal
-[6]  CBOX-PAS       : PlexAutoScan 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[7]  PTS-WordPress  : Deploy WordPress Instances
-[8]  PTS-Vault      : Backup & Restore
-[9]  PTS-Cloud      : GCE & Virtual Instances
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[10] CBOX-PDUPE     : Find and delete duplicate files in Plex
-[11] Traktarr       : Fill Sonarr/Radarr over Trakt lists.
-[12] Plex Patrol    : Kick transcodes (audio or video or both)
-[13] Settings 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[Z]  Exit
-
-"$wisword"
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EOF
+#if [[ "${typed}" == "2" ]]; then sub_menu_security; fi
+end_menu
   # Standby
-  read -p '↘️  Type Number | Press [ENTER]: ' typed </dev/tty
+  read -p '💬  Type Number | Press [ENTER]: ' typed </dev/tty
 
+
+  
+
+Used disk space: $used of $capacity | $percentage used capacity                  Deployed
+EOF
+main_menu_options() {
   case $typed in
-  1) clear && bash /opt/plexguide/menu/pgcloner/traefik.sh && clear && primestart ;;
-  2) clear && bash /opt/plexguide/menu/portguard/portguard.sh && clear && primestart ;;
-  3) clear && bash /opt/plexguide/menu/shield/pgshield.sh && clear && primestart ;;
-  4) clear && bash /opt/plexguide/menu/pgcloner/pgclone.sh && clear && primestart ;;
-  5) clear && bash /opt/plexguide/menu/pgbox/select.sh && clear && primestart ;;
-  6) clear && bash /opt/plexguide/menu/pgscan/pgscan.sh && clear && primestart ;;
-  7) clear && bash /opt/plexguide/menu/pgcloner/pgpress.sh && clear && primestart ;;
-  8) clear && bash /opt/plexguide/menu/pgcloner/pgvault.sh && clear && primestart ;;
-  9) clear && bash /opt/plexguide/menu/interface/cloudselect.sh && clear && primestart ;;
-  10) clear && bash /opt/plexguide/menu/plex_dupe/plex_dupe.sh && clear && primestart ;;
-  11) clear && bash /opt/plexguide/menu/traktarr/traktarr.sh && clear && primestart ;;
-  12) clear && bash /opt/plexguide/menu/plexpatrol/plexpatrol.sh && clear && primestart ;;
-  13) clear && bash /opt/plexguide/menu/interface/settings.sh && clear && primestart ;;
+  1) clear && networking;;
+  2) clear && security && clear && primestart;;
+  3) clear && mount && clear && primestart;;
+  4) clear && apps && clear && primestart;;
+  5) clear && vault && clear && primestart;;
+  esac
+}
+  case $typed in
+  1) clear && networking && clear && primestart ;;
+  2) clear && security && clear && primestart ;;
+  3) clear && mount && clear && primestart;;
+  4) clear && apps && clear && primestart;;
+  5) clear && vault && clear && primestart;;
+  #/opt/plexguide/menu/pgscan/pgscan.sh && clear && primestart ;;
+  7) clear && bash /opt/plexguide/menu/pgvault/pgvault.sh && clear && primestart ;;
+  8) clear && bash /opt/plexguide/menu/plex_dupe/plex_dupe.sh && clear && primestart ;;
+  9) clear && bash /opt/plexguide/menu/traktarr/traktarr.sh && clear && primestart ;;
+  10) clear && bash /opt/plexguide/menu/plexpatrol/plexpatrol.sh && clear && primestart ;;
+  0) clear && bash /opt/plexguide/menu/interface/settings.sh && clear && primestart ;;
   z) clear && bash /opt/plexguide/menu/interface/ending.sh  && exit ;;
   Z) clear&& bash /opt/plexguide/menu/interface/ending.sh && exit ;;
   *) primestart ;;
+  #These options are hidden
+  13) clear && bash /opt/plexguide/menu/interface/cloudselect.sh && clear && primestart ;;
+  12) clear && bash /opt/plexguide/menu/pgcloner/pgpress.sh && clear && primestart ;;
   esac
 }
-
+#bash /opt/plexguide/menu/pgbox/select.sh && clear && primestart ;; this is for apps
 primestart

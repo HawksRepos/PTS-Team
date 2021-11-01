@@ -7,14 +7,14 @@
 ################################################################################
 source /opt/plexguide/menu/functions/install.sh
 emergency
-file="/bin/pts"
-if [[ ! -f "/bin/pts" ]]; then
-  cp /opt/plexguide/menu/alias/templates/pts /bin && chown 1000:1000 /bin/pts && chmod 0755 /bin/pts; fi
+file="/bin/pandaura"
+if [[ ! -f "/bin/pandaura" ]]; then
+  cp /opt/plexguide/menu/alias/templates/pts /bin && chown 1000:1000 /bin/pandaura && chmod 0755 /bin/pandaura; fi
 #
 clear 
  printf '
 ┌─────────────────────────────────────┐
-│         -==   Team PTS  ==-         │
+│        -==   Pandaura  ==-          │
 │ ————————————————————————————————————│
 │ Restart PTS:              pts       │
 │ Update  PTS:              ptsupdate │
@@ -22,20 +22,13 @@ clear
 │ Download Your PTS Fork:   pgfork    │
 │                                     │
 │ ————————————————————————————————————│
-│ Thanks For Being Part of the Team   │
+│ Thanks For being a part of the team │
 │                                     │
 │ Thanks to:                          │
 │                                     │
-│ Davaz, Deiteq, FlickerRate,         │
-│ ClownFused, MrDoob, Sub7Seven,      │
-│ TimeKills, The_Creator, Desimaniac, │
-│ l3uddz, RXWatcher, Calmcacil,       │
-│ ΔLPHΔ , Maikash , Porkie            │
-│ CDN_RAGE , hawkinzzz , The_DeadPool │
-│ BugHunter : Krallenkiller           │
+│ Hawkinzzz, Syndrogo, Anap_          │
+│ Xaritomi, Demon, Man1234,           │
+│ Pianomanx, xr3negadex, salty,       │       |
 │                                     │
 └─────────────────────────────────────┘
 '
-
-
-

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Title:      PTS List commands
-# Author(s):  MrDoobPG
+# Author(s):  Pandaura
 # GNU:        General Public License v3.0
 ################################################################################
 ---
@@ -26,26 +26,10 @@
 
     ###### Install PGBlitz
 
-    - name: PlexGuide
+    - name: Pandaura
       template:
-        src: plexguide
-        dest: /bin/plexguide
-        force: yes
-        mode: 0775
-        owner: root
-
-    - name: PTS
-      template:
-        src: pts
-        dest: /bin/pts
-        force: yes
-        mode: 0775
-        owner: root
-
-    - name: PGBlitz
-      template:
-        src: pgblitz
-        dest: /bin/pgblitz
+        src: pandaura
+        dest: /bin/pandaura
         force: yes
         mode: 0775
         owner: root
