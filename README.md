@@ -1,28 +1,12 @@
-![](https://github.com/Pandaura/PTS-Team/blob/master/pandaura.gif)  
+**PTS is currently in maintenance mode and is considered feature complete.** From time-to-time developers will take it upon themselves to add new containers to Community-Apps as requested and update the Core-Apps whenever required.
 
-THIS KINDA EXPLODED SOMEWHAT SO EXPECT TO SEE SOME CHANGES SOON! BARE WITH ME!
+We consider PTS to be a remarkable collaborative achievement and take pride in the fact we have built a solid foundation for any person to setup and learn basic Linux and also run a media server with minimal effort.
 
-This is a fork of PTS/MHA called Pandaura. Thank you to all who contributed to the previous projects. No features are really added to MHA anymore as it is in maintenance mode so I will be making some ammendments here. Pandaura utilizes Ansible and Docker to streamline your media server while deploying multiple tools for your server operations.
+We encourage anyone wanting to contribute to the project in the future to join our community, this is also where we provide support: https://discord.gg/cKsMwMZ
 
-My personal opinion. PTS/MHA did well and still are providing excellend support. Whilst PG was more of a rename and grab project with an awesome community in which we can't deny the time and effort that was put into the project. The remnants meant things were, for lack of a better word, bashed together which left untidy and unfinished menu systems with grammar and spelling that will make your eyes bleed. I'm here to tidy this up, improve on the messy (only in some places) code and just make this the tool that it should have been. Previous projects had the potential to just be burned but you have nothing to worry about here. This is a safer/faster/more reliable project but we all have different tastes....enjoy.
+Thanks to our valued contributors over the past couple of years, you have helped create something to be proud of and that will serve the community well into the future.
 
-I'll be listing a few of the annoyances below...
-
-The menu doesn't even go back when you're in a sub menu half the time...you are either left hanging or you go straight back to the beginning either way this is really frustrating
-
-Most menu sub systems again wouldn't even 'clear' leaving your terminal messy
-
-Current section being worked on - 
-
-Traefik V2  
-Authelia  
-Cloud Companion  
-Python Plex Library - own version with scraping 
-Spelling/typos/general script tidy up  
-Refresh  
-Ouroboros -- It's no longer in development so why use it https://github.com/pyouroboros/ouroboros  
-Core Apps - Update the list of Core apps  
-Community Apps - Update the list of Community apps  
+**You know who you are.** PTS is forever, others will come and go.
 
 _**Table of Contents**_
 
@@ -36,9 +20,9 @@ _**Table of Contents**_
 
 # 1. Install
 
-## (i) Backup your current server using PTS Vault before installing Pandaura.   
+## (i) Backup your current server using PTS Vault before installing PTS-Team.   
 
-Your PTS backup can be used to restore your applications in Pandaura fork after install (see later)  
+Your PTS backup can be used to restore your applications in PTS fork after install (see later)  
 **NOTE**  Tested and working for PG v8.5-8.7
 
 Type the following to access your current build's menu: `sudo pgblitz`    
@@ -59,65 +43,95 @@ sudo wget -N https://raw.githubusercontent.com/MHA-Team/PTS-Clone/final/function
 ```  
 
 
-## (ii) Installing Pandaura
+## (ii) Installing PTS
 
 **NOTE**
-The ideal method of installing the Pandaura is to delete your current build and install Pandaura on a clean system.
-Pandaura works best on **ubuntu 18.XX** and this tutorial will assume you are using ubuntu 18.XX.
+The ideal method of installing the PTS fork is to delete your current build and install PTS fork on a clean system.
+PTS fork works best on **ubuntu 18.XX** and this tutorial will assume you are using ubuntu 18.XX.
 If you are unsure on how to do this, please refer to the documentation provided by your server provider.  
 
 Once your server has an OS installed, login to your server using SSH.  
 
-Type or paste the following to install Pandaura fork:  
+Type or paste the following to install PTS fork:  
 
 ```
 sudo apt-get update -yqq
 sudo apt-get upgrade -yqq
 sudo apt-get autoclean -yqq
 sudo apt-get install wget -y
-sudo wget -qO- https://raw.githubusercontent.com/Pandaura/Install/master/install.sh | sudo bash
+sudo wget -qO- https://raw.githubusercontent.com/MHA-Team/Install/master/install.sh | sudo bash
 
 ```
 
 The installation will then take you through the setup which is self-explanatory.  
 
-### Optional - updating your PTS to Pandaura
-IDoMnCi came up with a great script to change all the links on an existing PTS-Team (NOT PG 8.x) to the Pandaura.
-Details - https://github.com/Pandaura/Install/pull/4
+### Alternative method of installing PTS fork (without removing your current build)
+
+**NOTE** This has currently only been tested with PG v8.5-8.7  
+
+Type or paste the following:
+
 ```
-sudo wget -qO- https://raw.githubusercontent.com/Pandaura/Install/master/relocate.sh | sudo bash
+sudo apt-get update -yqq
+sudo apt-get upgrade -yqq
+sudo apt-get autoclean -yqq
+sudo apt-get install wget -y
+sudo wget -qO- https://raw.githubusercontent.com/MHA-Team/Install/master/install.sh | sudo bash
+
+```    
+### Optional - updating your PTS-Team fork to the new MHA-Team fork
+IDoMnCi came up with a great script to change all the links on an existing PTS-Team fork (NOT PG 8.x) to the MHA-Team fork.
+Details - https://github.com/MHA-Team/Install/pull/4
+```
+sudo wget -qO- https://raw.githubusercontent.com/MHA-Team/Install/master/relocate.sh | sudo bash
 
 sudo ptsupdate
 
 ```
 
-## Configuring Pandaura
+### Testing Only - Not Supported - Install PTS-Team fork via Windows 10 20H1 WSL2 Ubuntu 18.04
 
-Then type the following to run the Pandaura menu: `sudo pandaura`
+Sammykins has tested installing the PTS-Team form on a Windows 10 machine via the new WSL2 system built into Windows.
+Follow the above (#ii-installing-pts) in a WSL2 terminal shell, if you do not know how to enable WSL2 and install an Ubuntu 18.04 system for this method it is recommended not to install.
 
-* Set up and deploy Traefik ([see here](https://github.com/Pandaura/PTS-Team/wiki/Traefik))   
+DO NOT ASK FOR SUPPORT OR FIXES FOR THIS METHOD IT IS PROVIDED AS-IS AND WE TAKE NO RESPONSIBILITY IF ANYTHING BELOW DOES NOT FUNCTION OR BREAKS YOUR WINDOWS 10 INSTALLATION. YOU DO THE BELOW AT YOUR OWN RISK.
 
-* Close ports using Port Guard ([see here](https://github.com/Pandaura/PTS-Team/wiki/PTS-Port-Guard))  
+* Follow the following page to install and setup WSL2 ([see here](https://docs.microsoft.com/en-us/windows/wsl/install-win10))
+* Only use an Ubuntu 18.04 VM from the Microsoft Store
+* Prior to install follow this to enable systemd: ([see here](https://github.com/DamionGans/ubuntu-wsl2-systemd-script))
+* The script may fail to create the plexguide network in docker, simply run `docker network create plexguide` to fix
+* Use MultiHD to set another drive as the main path for data, we recommend this if your C drive is too small as WSL2 will default run on the OS drive, e.g. if you have a D: drive, this would be `/mnt/d/pathtoanewfolderforptsfiles`
+* Follow the rest of the guides for configuring PTS
 
-* Deploy Pandaura Shield (GOAuth - all apps supported) [see here](https://github.com/Pandaura/PTS-Team/wiki/PTS-Shield)
+## Configuring PTS
 
-* Set up and deploy Clone. You can restore you backup keys at this stage. [see here](https://github.com/Pandaura/PTS-Team/wiki/PTS-Clone)
+Configuring PTS fork is the same as configuring PG / PlexGuide.
 
-* (Optional) Restore PTS backup (created in step 1) using Vault. [see here](https://github.com/Pandaura/PTS-Team/wiki/PTS-Vault---Data-Storage)
+Then type the following to run the PTS menu: `sudo pts`
 
-* Install desired core/community applications (Do this regardless of whether it is a fresh install with restore or overwrite)  [see here](https://github.com/Pandaura/PTS-Team/wiki/core-apps)
+* Set up and deploy Traefik ([see here](https://github.com/MHA-Team/PTS-Team/wiki/Traefik))   
 
-* (Optional) If overwriting/restoring, you will need to change 2 remote path mappings in applications (NZB clients / Torrent clients / radarr / sonarr / lidarr etc)    [see here](https://github.com/Pandaura/PTS-Team/wiki/Remote-Path-Mappings)
+* Close ports using Port Guard ([see here](https://github.com/MHA-Team/PTS-Team/wiki/PTS-Port-Guard))  
+
+* Deploy PTS Shield (GOAuth - all apps supported) [see here](https://github.com/MHA-Team/PTS-Team/wiki/PTS-Shield)
+
+* Set up and deploy PTS-Clone. You can restore you backup keys at this stage. [see here](https://github.com/MHA-Team/PTS-Team/wiki/PTS-Clone)
+
+* (Optional) Restore PTS backup (created in step 1) using PTS-Vault. [see here](https://github.com/MHA-Team/PTS-Team/wiki/PTS-Vault---Data-Storage)
+
+* Install desired core/community applications (Do this regardless of whether it is a fresh install with restore or overwrite)  [see here](https://github.com/MHA-Team/PTS-Team/wiki/core-apps)
+
+* (Optional) If overwriting/restoring, you will need to change 2 remote path mappings in applications (NZB clients / Torrent clients / radarr / sonarr / lidarr etc)    [see here](https://github.com/MHA-Team/PTS-Team/wiki/Remote-Path-Mappings)
 
 **Why do I need to change remote paths?**  
 
-Pandaura will create one download folder for completed downloads using any NZB client `/mnt/downloads/nzb` and one download folder for completed downloads using any torrent client `/mnt/downloads/torrent`. Both folder names are different to those used in previous versions of PTS. This remote paths need to be changed in your configuration settings (nzbget/radarr/sonarr etc) which you can do in either in terminal or webUI.  
+PTS will create one download folder for completed downloads using any NZB client `/mnt/downloads/nzb` and one download folder for completed downloads using any torrent client `/mnt/downloads/torrent`. Both folder names are different to those used in previous versions of PTS. This remote paths need to be changed in your configuration settings (nzbget/radarr/sonarr etc) which you can do in either in terminal or webUI.  
 
-**NOTE**  PTS does **not** install PGUI by default.   
+**NOTE**  PTS fork does **not** install PGUI by default.   
 
 # 2. Project Statement
 
-Pandaura  is a **fork** of PTS/MHA, an all-in-one media solution that deploys a Media Server through the use of either your local HDD or Google Drive; serving as unlimited back-end storage.
+PTS  is a **fork** of PG / Plexguide, an all-in-one media solution that deploys a Media Server through the use of either your local HDD or Google Drive; serving as unlimited back-end storage. PTS utilizes Ansible and Docker to streamline your Media Server while deploying multiple tools for your server operations.
 
 # 3. Functional Use
 
@@ -133,8 +147,8 @@ Pandaura  is a **fork** of PTS/MHA, an all-in-one media solution that deploys a 
 
 # 4. Recommended Reading
 
-[**[Click Here]**](https://github.com/Pandaura/PTS-Team/wiki/Pre-Reading) to view the list!
+[**[Click Here]**](https://github.com/MHA-Team/PTS-Team/wiki/Pre-Reading) to view the list!
 
 ## 5. Having Issues?
 
-[**[Click Here]**](https://github.com/Pandaura/PTS-Team/wiki/Common-Issues) for more information!
+[**[Click Here]**](https://github.com/MHA-Team/PTS-Team/wiki/Common-Issues) for more information!

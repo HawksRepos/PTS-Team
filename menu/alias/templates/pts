@@ -10,17 +10,9 @@ source /opt/plexguide/menu/functions/functions.sh
 source /opt/plexguide/menu/functions/start.sh
 source /opt/plexguide/menu/functions/install.sh
 
-mkdir -p /opt/plexguide/roles/log
-mkdir -p /var/plexguide/logs
-mkdir -p /opt/appdata/plexguide
-
 sudocheck
 missingpull
 
-if [[ ! -e "/bin/pandaura" ]]; then
-  cp /opt/plexguide/menu/alias/templates/pandaura /bin/ &>/dev/null &
-  chown 1000:1000 /bin/pandaura
-  chmod 0755 /bin/pandaura
-fi
 # pg deploy contains pgdeploy at end
+clear
 pginstall

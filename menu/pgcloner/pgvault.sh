@@ -7,14 +7,16 @@
 ################################################################################
 
 ### FILL OUT THIS AREA ###
-echo 'pgclone' >/var/plexguide/pgcloner.rolename
-echo 'PTS-Clone' >/var/plexguide/pgcloner.roleproper
-echo 'PTS-Clone' >/var/plexguide/pgcloner.projectname
-echo 'final' >/var/plexguide/pgcloner.projectversion
-echo 'pgclone.sh' >/var/plexguide/pgcloner.startlink
+echo 'pgvault' >/var/plexguide/pgcloner.rolename
+echo 'PTS-Vault' >/var/plexguide/pgcloner.roleproper
+echo 'PTS-Vault' >/var/plexguide/pgcloner.projectname
+echo 'master' >/var/plexguide/pgcloner.projectversion
+echo 'pgvault.sh' >/var/plexguide/pgcloner.startlink
 
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo "💬 rClone utilizes RClone's Mounts + MergerFS's Union" >/var/plexguide/pgcloner.info
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo "💬 Vault is a combined group of services that utilizes the backup
+and restore processes, which enables the safe storage and transport through
+the use of Google Drive in a hasty and efficient manner!" >/var/plexguide/pgcloner.info
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ### START PROCESS

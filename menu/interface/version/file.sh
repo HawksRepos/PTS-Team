@@ -7,7 +7,6 @@
 ################################################################################
 rm -rf /var/plexguide/ver.temp 1>/dev/null 2>&1
 touch /var/plexguide/ver.temp
-typed="${typed,,}"
 
 sleep 4
 ## Builds Version List for Display
@@ -32,7 +31,7 @@ while [ "$break" == "no" ]; do
   read -p '↘️  Type | PRESS ENTER: ' typed
   storage=$(grep $typed /var/plexguide/ver.temp)
 
-  if [[ "${typed}" == "exit" || "${typed}" == "z" ]]; then exit; fi
+  if [[ "$typed" == "exit" || "$typed" == "Exit" || "$typed" == "EXIT" || "$typed" == "z" || "$typed" == "Z" ]]; then
     echo ""
     touch /var/plexguide/exited.upgrade
     exit
@@ -54,7 +53,7 @@ EOF
     tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  SYSTEM MESSAGE: Version $storage does not exist! - Standby!
+⛔️  SYSTEM MESSAGE: Version $storage does not exist! - Standby!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
     sleep 4

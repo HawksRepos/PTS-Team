@@ -19,9 +19,9 @@ emergency(){
       tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  Warning 
+⛔️  Emergency & Warning Log Generator 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-NOTE: This can be turned [On] or [Off] in Settings.
+NOTE: This can be turned [On] or Off in Settings!
 
 EOF
 
@@ -32,7 +32,7 @@ EOF
       done <<<"$(ls /opt/appdata/plexguide/emergency)"
 
       echo
-      read -n 1 -s -r -p "Acknowledge info | Press [ENTER]"
+      read -n 1 -s -r -p "Acknowledge Info | Press [ENTER]"
       echo
     else
       touch ${abc}/emergency.log
